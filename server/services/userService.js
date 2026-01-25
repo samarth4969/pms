@@ -43,3 +43,19 @@ export const allUsers = async () => {
 
   return users;
 };
+
+export const assignSupervisorDirectly=async(studentId,supervisorid)=>{
+    const student=await User.findOne({_id:studentId,role:"Student"});
+    const supervior=await User.findOne({_id:teacherId,role:"Teacher"});
+    if(!student||!teacher){
+        throw new Error("Student ot supervisor not found");
+    }
+    if(!supervisor.hasCapacity()){
+        throw new Error("Supervisor has reached their max capacity")
+    }
+    student.supervisor=supervisorId;
+    supervisor.assignedStudentds.push(studentId);
+    await Promise.all([student.save(),supervisor.save()]);
+    return {student,supervisor};
+   
+}

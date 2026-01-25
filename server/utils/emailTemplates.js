@@ -85,3 +85,150 @@ export function generateForgotPasswordEmailTemplate(resetPasswordUrl){
     </html>
     `;
 }
+
+//Request Acceptance Email Template
+export function generateRequestAcceptedTemplate(teacherName){
+    return  `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Request Accepted</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f6f8;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 40px auto;
+                background: #ffffff;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                background-color: #2563eb;  
+                color: #ffffff;
+                padding: 20px;  
+                text-align: center;
+            }
+            .content {
+                padding: 30px;
+                color: #333333;
+                line-height: 1.6;
+            }
+            .footer {
+                padding: 20px;
+                text-align: center;
+                font-size: 12px;
+                color: #777777; 
+                background-color: #f4f6f8;
+            }
+        </style>    
+    </head>
+    <body>
+        <div class="container"> 
+
+            <div class="header">
+                <h2>FYP SYSTEM - SUPERVISOR REQUEST ACCEPTED</h2>
+            </div>      
+            <div class="content">
+                <p>Dear Student,</p>
+                <p>     
+                    We are pleased to inform you that your supervisor request has been accepted by <strong>${teacherName}</strong>.
+                </p>
+                <p> 
+                    You can now proceed to collaborate with your supervisor on your Final Year Project.
+                </p>
+                <p>
+                    Best regards,<br/>
+                    Project Management System Team
+                </p>
+            </div>
+            <div class="footer">
+                <p>
+                    This is an automated message, please do not reply.  
+                </p>
+                </div>
+        </div>
+    </body>
+    </html>
+    `;
+}
+
+//Request reject email
+export function generateRequestRejectedTemplate(teacherName){
+    return  `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Request Rejected</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f6f8;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 40px auto;  
+                background: #ffffff;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                background-color: #2563eb;
+                color: #ffffff;
+                padding: 20px;
+                text-align: center;
+            }   
+            .content {
+                padding: 30px;
+                color: #333333;
+                line-height: 1.6;
+            }
+            .footer {
+                padding: 20px;
+                text-align: center;
+                font-size: 12px;
+                color: #777777;
+                background-color: #f4f6f8;
+            }   
+        </style>    
+    </head>
+    <body>
+        <div class="container"> 
+            <div class="header">
+                <h2>FYP SYSTEM - SUPERVISOR REQUEST REJECTED</h2>
+            </div>      
+            <div class="content">
+                <p>Dear Student,</p>
+                <p>     
+                    We regret to inform you that your supervisor request has been rejected by <strong>${teacherName}</strong>.          
+                </p>
+                <p> 
+                    You may consider reaching out to other faculty members for supervision or consult your academic advisor for further guidance.   
+                </p>
+                <p>
+                    Best regards,<br/>
+                    Project Management System Team
+                </p>
+            </div>  
+            <div class="footer">
+                <p>
+                    This is an automated message, please do not reply.
+                </p>
+                </div>
+        </div>  
+    </body>
+    </html>
+    `;
+}

@@ -1,57 +1,69 @@
 import { asyncHandler } from "../middlewares/asyncHandler.js";
-import {ErrorHandler} from "../middlewares/error.js";
-import { User } from "../models/user.js";
+import { ErrorHandler } from "../middlewares/error.js";
 import * as userServices from "../services/userService.js";
+import * as projectServices from "../services/projectServices.js";
+import * as notificationServices from "../services/notificationServices.js";
 
-export const createStudent=asyncHandler(async(req,res,next)=>{
-    const {name,email,password,department}=req.body;
-    if(!name || !email || !password ||!department){
-        return next(new ErrorHandler("Please provide all required fields",400));
-    }
+import { User } from "../models/user.js";
+import Project from "../models/project.js";
+import {supervisorRequest}  from "../models/supervisorRequest.js";
+// import {User} from
 
-    const user=await userServices.createUser({name,email,password,department,role:"Student"});
-    res.status(201).json({
-        success:true,
-        message:"Student created successfullt",
-        data:{user},
-    })
-})
+export const createStudent = asyncHandler(async (req, res, next) => {
+  const { name, email, password, department } = req.body;
+  if (!name || !email || !password || !department) {
+    return next(new ErrorHandler("Please provide all required fields", 400));
+  }
 
-export const updateStudent=asyncHandler(async(req,res,next)=>{
-    const {id}=req.params;
-    const updateData={...req.body};
-    delete updateData.role;
+  const user = await userServices.createUser({
+    name,
+    email,
+    password,
+    department,
+    role: "Student",
+  });
+  res.status(201).json({
+    success: true,
+    message: "Student created successfullt",
+    data: { user },
+  });
+});
 
-    const user=await userServices.updateUser(id,updateData);
-    if(!user){
-        return next(new ErrorHandler("Student not found",404));
+export const updateStudent = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const updateData = { ...req.body };
+  delete updateData.role;
 
-    }
-    res.status(200).json({
-        success:true,
-        message:"Student updated successfully",
-        data:{user},
-    })
-})
+  const user = await userServices.updateUser(id, updateData);
+  if (!user) {
+    return next(new ErrorHandler("Student not found", 404));
+  }
+  res.status(200).json({
+    success: true,
+    message: "Student updated successfully",
+    data: { user },
+  });
+});
 
-export const deleteStudent=asyncHandler(async(req,res,next)=>{
-    const {id}=req.params;
-    const user=await userServices.getUserById(id);
-    if(!user){
-        return next(new ErrorHandler("Student not found",404));
-    }
-    if(user.role!=="Student"){
-        return next(new ErrorHandler("User is not a student",404));
-    }
-    await userServices.deleteUser(id);
-    res.status(200).json({
-        success:true,
-        message:"Student deleted successfully",
-    })
-})
+export const deleteStudent = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await userServices.getUserById(id);
+  if (!user) {
+    return next(new ErrorHandler("Student not found", 404));
+  }
+  if (user.role !== "Student") {
+    return next(new ErrorHandler("User is not a student", 404));
+  }
+  await userServices.deleteUser(id);
+  res.status(200).json({
+    success: true,
+    message: "Student deleted successfully",
+  });
+});
 
 export const createTeacher = asyncHandler(async (req, res, next) => {
-  const { name, email, password, department, maxStudents, experties } = req.body;
+  const { name, email, password, department, maxStudents, experties } =
+    req.body;
 
   if (
     !name ||
@@ -61,16 +73,14 @@ export const createTeacher = asyncHandler(async (req, res, next) => {
     !maxStudents ||
     !experties
   ) {
-    return next(
-      new ErrorHandler("Please provide all required fields", 400)
-    );
+    return next(new ErrorHandler("Please provide all required fields", 400));
   }
 
   const parsedExperties = Array.isArray(experties)
     ? experties
     : typeof experties === "string"
-    ? experties.split(",").map((s) => s.trim())
-    : [];
+      ? experties.split(",").map((s) => s.trim())
+      : [];
 
   const user = await userServices.createUser({
     name,
@@ -89,37 +99,36 @@ export const createTeacher = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 export const updateTeacher = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const updateData = { ...req.body };
-    delete updateData.role;
+  const { id } = req.params;
+  const updateData = { ...req.body };
+  delete updateData.role;
 
-    const user = await userServices.updateUser(id, updateData);
-    if (!user) {
-      return next(new ErrorHandler("Teacher not found", 404));
-    }   
-    res.status(200).json({
-        success: true,
-        message: "Teacher updated successfully",
-        data: { user },
-    });
+  const user = await userServices.updateUser(id, updateData);
+  if (!user) {
+    return next(new ErrorHandler("Teacher not found", 404));
+  }
+  res.status(200).json({
+    success: true,
+    message: "Teacher updated successfully",
+    data: { user },
+  });
 });
 
 export const deleteTeacher = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const user = await userServices.getUserById(id);    
-    if (!user) {
-      return next(new ErrorHandler("Teacher not found", 404));
-    }   
-    if (user.role !== "Teacher") {
-      return next(new ErrorHandler("User is not a teacher", 404));
-    }   
-    await userServices.deleteUser(id);
-    res.status(200).json({
-        success: true,
-        message: "Teacher deleted successfully",
-    });
+  const { id } = req.params;
+  const user = await userServices.getUserById(id);
+  if (!user) {
+    return next(new ErrorHandler("Teacher not found", 404));
+  }
+  if (user.role !== "Teacher") {
+    return next(new ErrorHandler("User is not a teacher", 404));
+  }
+  await userServices.deleteUser(id);
+  res.status(200).json({
+    success: true,
+    message: "Teacher deleted successfully",
+  });
 });
 
 export const getAllUsers = asyncHandler(async (req, res, next) => {
@@ -132,7 +141,84 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const assignSupervisor= asyncHandler(async (req, res, next) => {})
-export const getAllProject= asyncHandler(async (req, res, next) => {})
-export const getDashboardStats= asyncHandler(async (req, res, next) => {})
+export const getAllProjectsController = asyncHandler(async (req, res) => {
+  const projects = await projectServices.getAllProjects();
+
+  res.status(200).json({
+    success: true,
+    message: "Projects fetched successfully",
+    data: { projects },
+  });
+});
+
+export const getDashboardStats = asyncHandler(async (req, res, next) => {
+  const [
+    totalStudents,
+    totalTeachers,
+    totalProjects,
+    pendingRequests,
+    completedProjects,
+    pendingProjects,
+  ] = await Promise.all([
+    User.countDocuments({ role: "Student" }),
+    User.countDocuments({ role: "Teacher" }),
+    Project.countDocuments(),
+    supervisorRequest.countDocuments({ status: "pending" }),
+    Project.countDocuments({ status: "completed" }),
+    Project.countDocuments({ status: "pending" }),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    message: "Admin Dashboard fetched",
+    data: {
+      stats: {
+        totalStudents,
+        totalTeachers,
+        totalProjects,
+        pendingRequests,
+        completedProjects,
+        pendingProjects,
+      },
+    },
+  });
+});
+
+export const assignSupervisor = asyncHandler(async (req, res, next) => {
+  const { studentId, supervisrId } = req.body;
+  if (!studentId || !supervisrId) {
+    return next(
+      new ErrorHandler("StudentId and SupervisorId are required", 404),
+    );
+  }
+  const project = await Project.findOne({ student: studentId });
+  if (!project) {
+    return next(new ErrorHandler("Project not found", 404));
+  }
+  if (project.supervisor !== null) {
+    return next(new ErrorHandler("Supervisor already assigned", 404));
+  }
+  if (project.status !== "approved") {
+    return next(new ErrorHandler("Project not approved yet", 400));
+  } else if (project.status === "pending") {
+    return next(new ErrorHandler("Project is in pending state", 400));
+  } else if (project.status === "rejected") {
+    return next(new ErrorHandler("Project is rejected", 400));
+  }
+
+  const {student,supervisor}=await userServices.assignSupervisorDirectly(studentId,supervisrId);
+
+  project.supervisor=supervisor;
+  await project.save();
+  await notificationServices.notifyUser(studentId,`You have been assigned supervior ${supervisor.name}`,"approval","/students/status","low");
+  await notificationServices.notifyUser(supervisrId,`The ${supervisor.name} has been officilly assigned to you for FYP supervisor`,"general","/teachers/status","low");
+
+  res.status(200).json({
+    success:true,
+    message:"Supervisor assigned successfully",
+    data:{student,supervisor},
+  })
+});
+
+
 

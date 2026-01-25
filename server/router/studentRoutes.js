@@ -1,10 +1,9 @@
 import express from "express";
-import {getAvailableSupervisors,getStudentProject,requestSupervisor,submitProposal,uploadFiles    }from "../controllers/studentController.js"
+import {downloadFile, getAvailableSupervisors,getDashBoardStats,getFeedback,getStudentProject,getSupervisor,requestSupervisor,submitProposal,uploadFiles    }from "../controllers/studentController.js"
 
 import multer from "multer";
 import { isAuthenticated,isAuthorized } from "../middlewares/authMiddleware.js";
 import { handleUploadError,upload } from "../middlewares/upload.js";
-import { getSupervisor } from "../../client/src/store/slices/studentSlice.js";
 
 const router=express.Router();
 
@@ -16,4 +15,12 @@ router.get("/fetch-supervisors",isAuthenticated,isAuthorized("Student"),getAvail
 router.get("/supervisor",isAuthenticated,isAuthorized("Student"),getSupervisor);
 router.post("/request-supervisor",isAuthenticated,isAuthorized("Student"),requestSupervisor);
 
+router.get("/feedback/:projectId",isAuthenticated,isAuthorized("Student"),getFeedback);
+router.get("/fetch-dashboard-stats",isAuthenticated,isAuthorized("Student"),getDashBoardStats);
+
+router.get("/download/:projectId/:fileId",isAuthenticated,isAuthorized("Student"),downloadFile);
+
+
+
 export default router;
+

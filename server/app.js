@@ -5,6 +5,10 @@ import { config } from "dotenv";
 import authRouter from "./router/userRoutes.js";
 import adminRouter from "./router/adminRoutes.js";
 import studentRouter from "./router/studentRoutes.js";
+import teacherRouter from "./router/teacherRoutes.js";
+import notificationRouter from "./router/notificationRoutes.js";
+import deadlineRouter from "./router/deadlineRoutes.js";
+import projectRouter from "./router/projectRoutes.js";
 import errorMiddleware from "./middlewares/error.js";
 import {fileURLToPath} from "url";
 import path from "path";
@@ -51,6 +55,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/student",studentRouter);
+app.use("/api/v1/notification",notificationRouter);
+app.use("/api/v1/project",projectRouter);
+app.use("/api/v1/deadline",deadlineRouter);
+app.use("/api/v1/teacher",teacherRouter);
 
 /* ✅ ERROR HANDLER */
 app.use(errorMiddleware);

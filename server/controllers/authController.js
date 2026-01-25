@@ -1,4 +1,4 @@
-import { asyncHandler } from "../middlewares/asyncHandler.js";
+import {asyncHandler} from "../middlewares/asyncHandler.js";
 import {ErrorHandler} from "../middlewares/error.js";
 import { User } from "../models/user.js";
 import { sendEmail } from "../services/emailService.js";
