@@ -9,9 +9,11 @@ import {
 
 const AssignedStudents = () => {
   const dispatch = useDispatch();
-  const { assignedStudents = [], loading, error } = useSelector(
-    (state) => state.teacher
-  );
+  const {
+    assignedStudents = [],
+    loading,
+    error,
+  } = useSelector((state) => state.teacher);
 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -21,8 +23,8 @@ const AssignedStudents = () => {
     title: "",
     message: "",
     type: "general",
-    
-  priority: "medium", // ✅ ADD THIS
+
+    priority: "medium", // ✅ ADD THIS
   });
 
   useEffect(() => {
@@ -42,18 +44,17 @@ const AssignedStudents = () => {
     }
   };
 
- const closeModal = () => {
-  setShowFeedbackModal(false);
-  setShowCompleteModal(false);
-  setSelectedStudent(null);
-  setFeedbackData({
-    title: "",
-    message: "",
-    type: "general",
-    priority: "medium", // ✅ MUST KEEP THIS
-  });
-};
-
+  const closeModal = () => {
+    setShowFeedbackModal(false);
+    setShowCompleteModal(false);
+    setSelectedStudent(null);
+    setFeedbackData({
+      title: "",
+      message: "",
+      type: "general",
+      priority: "medium", // ✅ MUST KEEP THIS
+    });
+  };
 
   /* ================= ACTIONS ================= */
 
@@ -74,7 +75,7 @@ const AssignedStudents = () => {
       addFeedback({
         projectId: selectedStudent.project._id,
         payload: feedbackData,
-      })
+      }),
     );
 
     closeModal();
@@ -104,210 +105,216 @@ const AssignedStudents = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-600 font-medium py-10">
-        {error}
-      </div>
+      <div className="text-center text-red-600 font-medium py-10">{error}</div>
     );
   }
 
-  return (
-    <>
-      {/* ================= MAIN CONTENT ================= */}
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="card">
-          <div className="card-header">
-            <h1 className="card-title">Assigned Students</h1>
-            <p className="card-subtitle">
-              Manage your assigned students and their projects
-            </p>
-          </div>
-        </div>
+ return (
+  <>
+  <div className="space-y-10">
 
-        {/* Students List */}
-        {assignedStudents.length === 0 ? (
-          <div className="card text-center py-10">
-            <p className="text-gray-600">No students assigned yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {assignedStudents.map((student) => (
-              <div key={student._id} className="card">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                  {/* Student Info */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-800">
-                      {student.name}
-                    </h3>
-                    <p className="text-sm text-slate-600">{student.email}</p>
-                    <p className="mt-2 font-medium text-slate-700">
-                      {student.project?.title || "No project title"}
-                    </p>
-                  </div>
+    {/* HEADER */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
+      <h1 className="text-2xl font-bold text-slate-800">
+        Assigned Students
+      </h1>
+      <p className="text-slate-500 text-sm mt-2">
+        Monitor progress, provide feedback and complete projects.
+      </p>
+    </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(
-                        student.project?.status
-                      )}`}
-                    >
-                      {student.project?.status || "pending"}
-                    </span>
+    {/* STUDENTS */}
+    {assignedStudents.length === 0 ? (
+      <div className="bg-white border border-slate-200 rounded-2xl p-14 text-center shadow-sm">
+        <p className="text-slate-500">No students assigned yet.</p>
+      </div>
+    ) : (
+      <div className="grid gap-6">
+        {assignedStudents.map((student) => (
+          <div
+            key={student._id}
+            className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition p-6"
+          >
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
 
-                    <button
-                      onClick={() => handleFeedback(student)}
-                      className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200"
-                      title="Provide Feedback"
-                    >
-                      <MessageSquare size={18} />
-                    </button>
+              {/* LEFT INFO */}
+              <div className="flex-1 space-y-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    {student.name}
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    {student.email}
+                  </p>
+                </div>
 
-                    {student.project?.status !== "completed" && (
-                      <button
-                        onClick={() => handleMarkComplete(student)}
-                        className="p-2 rounded-lg bg-green-100 text-green-600 hover:bg-green-200"
-                        title="Mark Complete"
-                      >
-                        <CheckCircle size={18} />
-                      </button>
-                    )}
-                  </div>
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <p className="text-sm font-medium text-slate-700">
+                    {student.project?.title || "No project title"}
+                  </p>
+
+                  <p className="text-xs text-slate-500 mt-1">
+                    Last Updated:{" "}
+                    {student.project?.updatedAt
+                      ? new Date(
+                          student.project.updatedAt
+                        ).toLocaleDateString()
+                      : "-"}
+                  </p>
                 </div>
               </div>
-            ))}
+
+              {/* RIGHT ACTIONS */}
+              <div className="flex items-center gap-4">
+
+                {/* STATUS BADGE */}
+                <span
+                  className={`px-3 py-1 text-xs rounded-full font-medium ${
+                    student.project?.status === "completed"
+                      ? "bg-green-100 text-green-700"
+                      : student.project?.status === "approved"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {student.project?.status || "pending"}
+                </span>
+
+                {/* FEEDBACK BUTTON */}
+                <button
+                  onClick={() => handleFeedback(student)}
+                  className="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm hover:bg-slate-700 transition"
+                >
+                  Give Feedback
+                </button>
+
+                {/* COMPLETE BUTTON */}
+                {student.project?.status !== "completed" && (
+                  <button
+                    onClick={() => handleMarkComplete(student)}
+                    className="px-4 py-2 rounded-xl bg-green-600 text-white text-sm hover:bg-green-700 transition"
+                  >
+                    Complete
+                  </button>
+                )}
+              </div>
+
+            </div>
           </div>
-        )}
+        ))}
       </div>
+    )}
+  </div>
 
-      {/* ================= FEEDBACK MODAL ================= */}
-      {showFeedbackModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="relative w-full max-w-md rounded-xl bg-white shadow-lg p-6">
-            {/* Close */}
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
+  {/* ================= FEEDBACK MODAL ================= */}
+  {showFeedbackModal && selectedStudent && (
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl p-8 relative">
 
-            <h2 className="text-lg font-semibold mb-4">Provide Feedback</h2>
+        <button
+          onClick={closeModal}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+        >
+          ✕
+        </button>
 
-            {/* Info */}
-            <div className="bg-gray-50 rounded-lg p-4 text-sm mb-5">
-              <p>
-                <span className="font-medium">Project:</span>{" "}
-                {selectedStudent.project?.title}
-              </p>
-              <p>
-                <span className="font-medium">Student:</span>{" "}
-                {selectedStudent.name}
-              </p>
-              <p>
-                <span className="font-medium">Last Updated:</span>{" "}
-                {selectedStudent.project?.updatedAt
-                  ? new Date(
-                      selectedStudent.project.updatedAt
-                    ).toLocaleDateString()
-                  : "-"}
-              </p>
-            </div>
+        <h2 className="text-xl font-semibold text-slate-800 mb-6">
+          Feedback for {selectedStudent.name}
+        </h2>
 
-            {/* Form */}
-           {/* Title */}
-<input
-  className="w-full mb-3 px-3 py-2 border rounded-lg"
-  placeholder="Feedback title"
-  value={feedbackData.title}
-  onChange={(e) =>
-    setFeedbackData({ ...feedbackData, title: e.target.value })
-  }
-/>
+        <div className="space-y-4">
 
-{/* Message */}
-<textarea
-  className="w-full mb-3 px-3 py-2 border rounded-lg"
-  rows={4}
-  placeholder="Write feedback..."
-  value={feedbackData.message}
-  onChange={(e) =>
-    setFeedbackData({ ...feedbackData, message: e.target.value })
-  }
-/>
+          <input
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-800 outline-none"
+            placeholder="Feedback title"
+            value={feedbackData.title}
+            onChange={(e) =>
+              setFeedbackData({ ...feedbackData, title: e.target.value })
+            }
+          />
 
-{/* Type */}
-<select
-  className="w-full mb-3 px-3 py-2 border rounded-lg"
-  value={feedbackData.type}
-  onChange={(e) =>
-    setFeedbackData({ ...feedbackData, type: e.target.value })
-  }
->
-  <option value="general">General</option>
-  <option value="positive">Positive</option>
-  <option value="negative">Negative</option>
-</select>
+          <textarea
+            rows={4}
+            className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-800 outline-none"
+            placeholder="Write detailed feedback..."
+            value={feedbackData.message}
+            onChange={(e) =>
+              setFeedbackData({ ...feedbackData, message: e.target.value })
+            }
+          />
 
-{/* ⭐ Priority — ADD THIS HERE */}
-<select
-  className="w-full mb-4 px-3 py-2 border rounded-lg"
-  value={feedbackData.priority}
-  onChange={(e) =>
-    setFeedbackData({ ...feedbackData, priority: e.target.value })
-  }
->
-  <option value="low">Low</option>
-  <option value="medium">Medium</option>
-  <option value="high">High</option>
-</select>
-
-
-            <button
-              onClick={submitFeedback}
-              disabled={
-                !feedbackData.title.trim() ||
-                !feedbackData.message.trim()
+          <div className="grid grid-cols-2 gap-4">
+            <select
+              className="px-4 py-2 border border-slate-300 rounded-xl"
+              value={feedbackData.type}
+              onChange={(e) =>
+                setFeedbackData({ ...feedbackData, type: e.target.value })
               }
-              className={`w-full py-2 rounded-lg text-white ${
-                !feedbackData.title.trim() ||
-                !feedbackData.message.trim()
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
             >
-              Submit Feedback
-            </button>
-          </div>
-        </div>
-      )}
+              <option value="general">General</option>
+              <option value="positive">Positive</option>
+              <option value="negative">Negative</option>
+            </select>
 
-      {/* ================= MARK COMPLETE MODAL ================= */}
-      {showCompleteModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">
-              Mark project as complete?
-            </h3>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-gray-200 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmMarkComplete}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg"
-              >
-                Confirm
-              </button>
-            </div>
+            <select
+              className="px-4 py-2 border border-slate-300 rounded-xl"
+              value={feedbackData.priority}
+              onChange={(e) =>
+                setFeedbackData({ ...feedbackData, priority: e.target.value })
+              }
+            >
+              <option value="low">Low Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="high">High Priority</option>
+            </select>
           </div>
+
+          <button
+            onClick={submitFeedback}
+            disabled={!feedbackData.title.trim() || !feedbackData.message.trim()}
+            className={`w-full py-2 rounded-xl text-white font-medium transition ${
+              !feedbackData.title.trim() || !feedbackData.message.trim()
+                ? "bg-slate-400 cursor-not-allowed"
+                : "bg-slate-900 hover:bg-slate-700"
+            }`}
+          >
+            Submit Feedback
+          </button>
         </div>
-      )}
-    </>
-  );
+      </div>
+    </div>
+  )}
+
+  {/* ================= COMPLETE MODAL ================= */}
+  {showCompleteModal && selectedStudent && (
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+        <h3 className="text-lg font-semibold text-slate-800 mb-6">
+          Mark project as complete?
+        </h3>
+
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={closeModal}
+            className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 transition"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={confirmMarkComplete}
+            className="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 transition"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</>
+
+ )
+
 };
 
 export default AssignedStudents;

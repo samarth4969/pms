@@ -36,10 +36,11 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpire: Date,
 
     department: {
-      type: String,
-      trim: true,
-      default: null,
-    },
+  type: String,
+  required: true,
+  enum: ["CS", "IT", "ENTC", "AIDS", "ANR", "Instru", "Electrical", "Mech", "Civil"]
+},
+
     experties: {
       type: [String],
 

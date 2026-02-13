@@ -125,348 +125,379 @@ const ManageTeachers = () => {
 
 
 
-  return <>
+  return (
+    <>
+  <div className="space-y-8">
 
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="card">
-        <div className="card-header flex flex-col md:flex-row justify-between items-start md:items-center">
+    {/* HEADER */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">
+          Manage Teachers
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Add, edit and manage teacher accounts
+        </p>
+      </div>
+
+      <button
+        onClick={() => dispatch(toggleTeacherModel())}
+        className="mt-4 md:mt-0 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition"
+      >
+        <Plus className="w-5 h-5" />
+        Add Teacher
+      </button>
+    </div>
+
+    {/* STATS */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex justify-between items-center">
           <div>
-            <h1 className="card-title">Manage Teachers</h1>
-            <p className="card-subtitle">
-              Add, edit, and manage teachers accounts
+            <p className="text-sm text-slate-500">Total Teachers</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {teachers.length}
             </p>
           </div>
-          <button
-            onClick={() => dispatch(toggleTeacherModel())}
-            className="btn-primary flex items-center space-x-2 mt-4 md:mt-0"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add New Teacher</span>
-          </button>
+          <div className="p-3 bg-blue-100 rounded-xl">
+            <Users className="w-6 h-6 text-blue-600" />
+          </div>
         </div>
       </div>
 
-      {/* Stats cards */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm text-slate-500">Assigned Students</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {teachers.reduce(
+                (sum, t) => sum + (t.assignedStudents?.length || 0),
+                0
+              )}
+            </p>
+          </div>
+          <div className="p-3 bg-purple-100 rounded-xl">
+            <BadgeCheck className="w-6 h-6 text-purple-600" />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm text-slate-500">Departments</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {departments.length}
+            </p>
+          </div>
+          <div className="p-3 bg-yellow-100 rounded-xl">
+            <TriangleAlert className="w-6 h-6 text-yellow-600" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* FILTERS */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-slate-600">Total Teachers</p>
-              <p className="text-lg font-semibold text-slate-800">
-                {teachers.length}
-              </p>
-            </div>
-          </div>
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Search Teachers
+          </label>
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <BadgeCheck className="w-6 h-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-slate-600">
-                Assigned Students
-              </p>
-              <p className="text-lg font-semibold text-slate-800">
-                {teachers.reduce(
-                  (sum, t) => sum + (t.assignedStudents?.length || 0),
-                  0
-                )}
-
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <TriangleAlert className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-slate-600">Departments</p>
-              <p className="text-lg font-semibold text-slate-800">
-                {departments.length}
-              </p>
-            </div>
-          </div>
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Filter by Department
+          </label>
+          <select
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+            value={filterDepartment}
+            onChange={(e) => setFilterDepartment(e.target.value)}
+          >
+            <option value="all">All Departments</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+    </div>
 
-      {/* Filters */}
-      <div className="card">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Search Teachers
-            </label>
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              className="input-field w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+    {/* TABLE */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-200">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Teachers List
+        </h2>
+      </div>
 
-          <div className="w-full md:w-56">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Filter by Department
-            </label>
-            <select
-              className="input-field w-full"
-              value={filterDepartment}
-              onChange={(e) => setFilterDepartment(e.target.value)}
-            >
-              <option value="all">All Departments</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
+      <div className="overflow-x-auto">
+        {filteredTeachers.length > 0 ? (
+          <table className="w-full text-sm">
+            <thead className="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+              <tr>
+                <th className="px-6 py-4 text-left">Teacher</th>
+                <th className="px-6 py-4 text-left">Department</th>
+                <th className="px-6 py-4 text-left">Expertise</th>
+                <th className="px-6 py-4 text-left">Joined</th>
+                <th className="px-6 py-4 text-left">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-slate-200">
+              {filteredTeachers.map((teacher) => (
+                <tr
+                  key={teacher._id}
+                  className="hover:bg-slate-50 transition"
+                >
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="font-medium text-slate-900">
+                        {teacher.name}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {teacher.email}
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-700">
+                    {teacher.department || "-"}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-700">
+                    {Array.isArray(teacher.experties)
+                      ? teacher.experties.join(", ")
+                      : teacher.experties || "-"}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-500">
+                    {teacher.createdAt
+                      ? new Date(teacher.createdAt).toLocaleDateString()
+                      : "-"}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleEdit(teacher)}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(teacher)}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Teachers table */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="card-title">Teachers List</h2>
-        </div>
-        <div className="overflow-x-auto">
-
-
-          {
-            filteredTeachers && filteredTeachers.length > 0 && (
-              <table className="w-full">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Teacher Info
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Department
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Experties
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Join dates
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-200">
-                  {filteredTeachers.length > 0 ? (
-                    filteredTeachers.map((teacher) => (
-                      <tr key={teacher._id} className="hover:bg-slate-50">
-                        {/* Teacher Info */}
-                        <td className="px-6 py-4">
-                          <div>
-                            <div className="text-sm font-medium text-slate-900">
-                              {teacher.name}
-                            </div>
-                            <div className="text-sm text-slate-500">
-                              {teacher.email}
-                            </div>
-
-                          </div>
-                        </td>
-
-                        {/* Department & Year */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-slate-900">
-                            {teacher.department || "-"}
-                          </div>
-
-                        </td>
-
-                        {/* Supervisor */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {Array.isArray(teacher.experties) && teacher.experties.length > 0
-                            ? teacher.experties.join(", ")
-                            : teacher.experties || "-"}
-                        </td>
-
-
-
-                        {/* Project Title */}
-                        < td className="px-6 py-4" >
-
-
-                          <div className="text-sm text-slate-900">
-                            {teacher.createdAt ? new Date(teacher.createdAt).toLocaleDateString() : "-"}
-                          </div>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-4">
-                            <button
-                              onClick={() => handleEdit(teacher)}
-                              className="text-blue-600 hover:text-blue-900"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(teacher)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="text-center py-6 text-slate-500">
-                        No teachers found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-
-
-              </table>
-            )
-          }
-
-
-        </div>
-
-        {/* Edit student modal */}
-        {showModel && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg w-full max-w-md mx-4 p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">
-                  Edit teacher
-                </h3>
-                <button onClick={handleCloseModal} className="text-slate-400 hover:to-slate-600">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Full name
-                  </label>
-                  <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email
-                  </label>
-                  <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Department
-                  </label>
-                  <select className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" required value={formData.department} onChange={(e) => setFormData({ ...formData, department: e.target.value })}>
-                    <option value="CS">CS</option>
-                    <option value="IT">IT</option>
-                    <option value="ENTC">ENTC</option>
-                    <option value="AIDS">AIDS</option>
-                    <option value="ANR">ANR</option>
-                    <option value="Instru">Instru</option>
-                    <option value="Electrical">Electrical</option>
-                    <option value="Mech">Mech</option>
-                    <option value="Civil">Civil</option>
-
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Experties
-                  </label>
-                  <select className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" required value={formData.experties} onChange={(e) => setFormData({ ...formData, experties: e.target.value })}>
-
-                    <option value="Artificial Intelligence">Artificial Intelligence</option>
-                    <option value="Machine Learning">Machine Learning</option>
-                    <option value="Data Science">Data Science</option>
-                    <option value="Deep Learning">Deep Learning</option>
-                    <option value="Computer Vision">Computer Vision</option>
-                    <option value="Natural Language Processing">Natural Language Processing</option>
-                    <option value="Web Development">Web Development</option>
-                    <option value="Full Stack Development">Full Stack Development</option>
-                    <option value="Backend Development">Backend Development</option>
-                    <option value="Frontend Development">Frontend Development</option>
-                    <option value="Cloud Computing">Cloud Computing</option>
-                    <option value="DevOps">DevOps</option>
-                    <option value="Cyber Security">Cyber Security</option>
-                    <option value="Blockchain">Blockchain</option>
-                    <option value="Internet of Things (IoT)">Internet of Things (IoT)</option>
-                    <option value="Embedded Systems">Embedded Systems</option>
-                    <option value="VLSI Design">VLSI Design</option>
-
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Max students
-                  </label>
-                  <input type="number" required value={formData.maxStudents} max={10} min={1} onChange={(e) =>
-                    setFormData({ ...formData, maxStudents: Number(e.target.value) })
-                  }
-                    className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" />
-                </div>
-
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button type="button" onClick={handleCloseModal} className="btn-danger">Cancel</button>
-                  <button type="submit" className="btn-primary">Update Teacher</button>
-                </div>
-
-              </form>
-            </div>
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-12 text-slate-500">
+            No teachers found.
           </div>
         )}
+      </div>
+    </div>
+
+    {/* EDIT MODAL */}
+{showModel && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold text-slate-900">
+          Edit Teacher
+        </h3>
+        <button
+          onClick={handleCloseModal}
+          className="text-slate-400 hover:text-slate-700"
+        >
+          <X />
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
+            className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+  <label className="block text-sm font-medium text-slate-700 mb-1">
+    Department
+  </label>
+  <select
+    value={formData.department}
+    onChange={(e) =>
+      setFormData({ ...formData, department: e.target.value })
+    }
+    className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+    required
+  >
+    <option value="">Select Department</option>
+    <option value="CS">CS</option>
+    <option value="IT">IT</option>
+    <option value="ENTC">ENTC</option>
+    <option value="AIDS">AIDS</option>
+    <option value="Electrical">Electrical</option>
+    <option value="Mech">Mechanical</option>
+    <option value="Civil">Civil</option>
+  </select>
+</div>
 
 
-        {/* Show delete model */}
-        {
-          showDeleteModal && teacherToDelete && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg w-full max-w-md mx-4 p-6 shadow-xl">
-                <div className="flex items-center mb-4">
-                  <div className="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center bg-red-100 rounded-full">
-                    <TriangleAlert className="w-6 h-6 text-red-600" />
-                  </div>
-                </div>
+        <div>
+  <label className="block text-sm font-medium text-slate-700 mb-1">
+    Expertise
+  </label>
+  <select
+    value={formData.experties}
+    onChange={(e) =>
+      setFormData({ ...formData, experties: e.target.value })
+    }
+    className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+    required
+  >
+    <option value="">Select Expertise</option>
+    <option value="Artificial Intelligence">Artificial Intelligence</option>
+    <option value="Machine Learning">Machine Learning</option>
+    <option value="Data Science">Data Science</option>
+    <option value="Deep Learning">Deep Learning</option>
+    <option value="Web Development">Web Development</option>
+    <option value="Full Stack Development">Full Stack Development</option>
+    <option value="Cloud Computing">Cloud Computing</option>
+    <option value="Cyber Security">Cyber Security</option>
+    <option value="IoT">IoT</option>
+    <option value="Embedded Systems">Embedded Systems</option>
+  </select>
+</div>
 
 
-                <div className="text-center">
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Delete teacher</h3>
-                  <p className="text-sm text-slate-500 mb-4">Are you sure you want to delete<span> {teacherToDelete.name}? This action cannot be undone</span></p>
-                  <div className="flex justify-center space-x-3">
-                    <button onClick={cancelDelete} className="btn-secondary">Cancel</button>
-                    <button onClick={confirmDelete} className="btn-danger">Delete</button>
-                  </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Max Students
+          </label>
+          <input
+            type="number"
+            min="1"
+            value={formData.maxStudents}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                maxStudents: Number(e.target.value),
+              })
+            }
+            className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
 
-                </div>
+        <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={handleCloseModal}
+            className="px-5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            Update
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
 
 
-              </div></div>
-          )
-        }
+    {/* DELETE MODAL */}
+    {showDeleteModal && teacherToDelete && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+          <div className="text-center">
+            <div className="mx-auto mb-4 w-12 h-12 flex items-center justify-center bg-red-100 rounded-full">
+              <TriangleAlert className="w-6 h-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Delete Teacher
+            </h3>
+            <p className="text-sm text-slate-500 mt-2">
+              Are you sure you want to delete{" "}
+              <span className="font-medium">
+                {teacherToDelete.name}
+              </span>
+              ? This action cannot be undone.
+            </p>
 
-        {isCreateTeacherModalOpen && <AddTeacher />}
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                onClick={cancelDelete}
+                className="px-5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
 
-      </div >
-    </div >
+    {isCreateTeacherModalOpen && <AddTeacher />}
+  </div>
+</>
 
-  </>;
+  )
 };
 
 export default ManageTeachers;

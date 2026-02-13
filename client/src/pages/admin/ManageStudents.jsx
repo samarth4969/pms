@@ -122,319 +122,336 @@ const ManageStudents = () => {
   }
 
 
-  return <>
+  return (
+    <>
+  <div className="space-y-8">
 
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="card">
-        <div className="card-header flex flex-col md:flex-row justify-between items-start md:items-center">
+    {/* HEADER */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">
+          Manage Students
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Add, edit and manage student accounts
+        </p>
+      </div>
+
+      <button
+        onClick={() => dispatch(toggleStudentModel())}
+        className="mt-4 md:mt-0 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition"
+      >
+        <Plus className="w-5 h-5" />
+        Add Student
+      </button>
+    </div>
+
+    {/* STATS */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex justify-between items-center">
           <div>
-            <h1 className="card-title">Manage Students</h1>
-            <p className="card-subtitle">
-              Add, edit, and manage student accounts
+            <p className="text-sm text-slate-500">Total Students</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {students.length}
             </p>
           </div>
-          <button
-            onClick={() => dispatch(toggleStudentModel())}
-            className="btn-primary flex items-center space-x-2 mt-4 md:mt-0"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add New Student</span>
-          </button>
+          <div className="p-3 bg-blue-100 rounded-xl">
+            <Users className="w-6 h-6 text-blue-600" />
+          </div>
         </div>
       </div>
 
-      {/* Stats cards */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm text-slate-500">Completed Projects</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {students.filter(s => s.projectStatus === "completed").length}
+            </p>
+          </div>
+          <div className="p-3 bg-green-100 rounded-xl">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm text-slate-500">Unassigned Students</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {students.filter(s => !s.supervisor).length}
+            </p>
+          </div>
+          <div className="p-3 bg-yellow-100 rounded-xl">
+            <TriangleAlert className="w-6 h-6 text-yellow-600" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* FILTERS */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-slate-600">Total Students</p>
-              <p className="text-lg font-semibold text-slate-800">
-                {students.length}
-              </p>
-            </div>
-          </div>
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Search Students
+          </label>
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <CheckCircle className="w-6 h-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-slate-600">
-                Completed Projects
-              </p>
-              <p className="text-lg font-semibold text-slate-800">
-                {students.filter(s => s.projectStatus === "completed").length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <TriangleAlert className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-slate-600">Unassigned Students</p>
-              <p className="text-lg font-semibold text-slate-800">
-                {students.filter(s => !s.supervisor).length}
-              </p>
-            </div>
-          </div>
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Filter by Department
+          </label>
+          <select
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+            value={filterDepartment}
+            onChange={(e) => setFilterDepartment(e.target.value)}
+          >
+            <option value="all">All Departments</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+    </div>
 
-      {/* Filters */}
-      <div className="card">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Search Students
-            </label>
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              className="input-field w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+    {/* TABLE */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-200">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Students List
+        </h2>
+      </div>
 
-          <div className="w-full md:w-56">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Filter by Department
-            </label>
-            <select
-              className="input-field w-full"
-              value={filterDepartment}
-              onChange={(e) => setFilterDepartment(e.target.value)}
-            >
-              <option value="all">All Departments</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
+      <div className="overflow-x-auto">
+        {filteredStudents.length > 0 ? (
+          <table className="w-full text-sm">
+            <thead className="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+              <tr>
+                <th className="px-6 py-4 text-left">Student</th>
+                <th className="px-6 py-4 text-left">Department</th>
+                <th className="px-6 py-4 text-left">Supervisor</th>
+                <th className="px-6 py-4 text-left">Project</th>
+                <th className="px-6 py-4 text-left">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-slate-200">
+              {filteredStudents.map((student) => (
+                <tr
+                  key={student._id}
+                  className="hover:bg-slate-50 transition"
+                >
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="font-medium text-slate-900">
+                        {student.name}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {student.email}
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-700">
+                    {student.department || "-"}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    {student.supervisor ? (
+                      <span className="px-3 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 font-medium">
+                        {users?.find(u => u._id === student.supervisor)?.name}
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700 font-medium">
+                        {student.projectStatus === "rejected"
+                          ? "Rejected"
+                          : "Not Assigned"}
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-700">
+                    {student.projectTitle || "-"}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleEdit(student)}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(student)}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Students table */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="card-title">Student List</h2>
-        </div>
-        <div className="overflow-x-auto">
-
-
-          {
-            filteredStudents && filteredStudents.length > 0 && (
-              <table className="w-full">
-                <thead className="bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Student Info
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Department & Year
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Supervisor
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Project Title
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-200">
-                  {filteredStudents.length > 0 ? (
-                    filteredStudents.map((student) => (
-                      <tr key={student._id} className="hover:bg-slate-50">
-                        {/* Student Info */}
-                        <td className="px-6 py-4">
-                          <div>
-                            <div className="text-sm font-medium text-slate-900">
-                              {student.name}
-                            </div>
-                            <div className="text-sm text-slate-500">
-                              {student.email}
-                            </div>
-                            {student.studentId && (
-                              <div className="text-xs text-slate-400">
-                                ID: {student.studentId}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Department & Year */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-slate-900">
-                            {student.department || "-"}
-                          </div>
-                          <div className="text-sm text-slate-500">
-                            {student.createdAt
-                              ? new Date(student.createdAt).getFullYear()
-                              : "-"}
-                          </div>
-                        </td>
-
-                        {/* Supervisor */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {student.supervisor ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                              {users?.find(u=>u._id===student?.supervisor)?.name}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-xs font-medium">
-                              {student.projectStatus === "rejected"
-                                ? "Rejected"
-                                : "Not Assigned"}
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Project Title */}
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-slate-900">
-                            {student.projectTitle || "-"}
-                          </div>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-4">
-                            <button
-                              onClick={() => handleEdit(student)}
-                              className="text-blue-600 hover:text-blue-900"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(student)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="text-center py-6 text-slate-500">
-                        No students found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-
-
-              </table>
-            )
-          }
-
-
-        </div>
-
-        {/* Edit student modal */}
-        {showModel && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg w-full max-w-md mx-4 p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">
-                  Edit student
-                </h3>
-                <button onClick={handleCloseModal} className="text-slate-400 hover:to-slate-600">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Full name
-                  </label>
-                  <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email
-                  </label>
-                  <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Department
-                  </label>
-                  <select className="input-field w-full py-1 border-b border-slate-600 focus:outline-none" required value={formData.department} onChange={(e) => setFormData({ ...formData, department: e.target.value })}>
-                    <option value="CS">CS</option>
-                    <option value="IT">IT</option>
-                    <option value="ENTC">ENTC</option>
-                    <option value="AIDS">AIDS</option>
-                    <option value="ANR">ANR</option>
-                    <option value="Instru">Instru</option>
-                    <option value="Electrical">Electrical</option>
-                    <option value="Mech">Mech</option>
-                    <option value="Civil">Civil</option>
-
-                  </select>
-                </div>
-
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button type="button" onClick={handleCloseModal} className="btn-danger">Cancel</button>
-                  <button type="submit" className="btn-primary">Update Student</button>
-                </div>
-
-              </form>
-            </div>
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center py-12 text-slate-500">
+            No students found.
           </div>
         )}
-
-
-        {/* Show delete model */}
-        {
-          showDeleteModal && studentToDelete && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg w-full max-w-md mx-4 p-6 shadow-xl">
-                <div className="flex items-center mb-4">
-                  <div className="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center bg-red-100 rounded-full">
-                    <TriangleAlert className="w-6 h-6 text-red-600" />
-                  </div>
-                </div>
-
-
-                <div className="text-center">
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Delete student</h3>
-                  <p className="text-sm text-slate-500 mb-4">Are you sure you want to delete<span> {studentToDelete.name}? This action cannot be undone</span></p>
-                  <div className="flex justify-center space-x-3">
-                    <button onClick={cancelDelete} className="btn-secondary">Cancel</button>
-                    <button onClick={confirmDelete} className="btn-danger">Delete</button>
-                  </div>
-
-                </div>
-
-
-              </div></div>
-          )
-        }
-
-        {isCreateStudentModalOpen && <AddStudent />}
-
       </div>
-    </div >
-  </>;
+    </div>
+
+    {/* EDIT MODAL */}
+{showModel && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold text-slate-900">
+          Edit Student
+        </h3>
+        <button
+          onClick={handleCloseModal}
+          className="text-slate-400 hover:text-slate-700"
+        >
+          <X />
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
+            className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+  <label className="block text-sm font-medium text-slate-700 mb-1">
+    Department
+  </label>
+
+  <select
+    required
+    value={formData.department}
+    onChange={(e) =>
+      setFormData({ ...formData, department: e.target.value })
+    }
+    className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+  >
+    <option value="">Select Department</option>
+    <option value="CS">CS</option>
+    <option value="IT">IT</option>
+    <option value="ENTC">ENTC</option>
+    <option value="AIDS">AIDS</option>
+    <option value="Electrical">Electrical</option>
+    <option value="Mech">Mechanical</option>
+    <option value="Civil">Civil</option>
+  </select>
+</div>
+
+
+        <div className="flex justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={handleCloseModal}
+            className="px-5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
+    {/* DELETE MODAL */}
+    {showDeleteModal && studentToDelete && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+          <div className="text-center">
+            <div className="mx-auto mb-4 w-12 h-12 flex items-center justify-center bg-red-100 rounded-full">
+              <TriangleAlert className="w-6 h-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900">
+              Delete Student
+            </h3>
+            <p className="text-sm text-slate-500 mt-2">
+              Are you sure you want to delete{" "}
+              <span className="font-medium">
+                {studentToDelete.name}
+              </span>
+              ? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                onClick={cancelDelete}
+                className="px-5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {isCreateStudentModalOpen && <AddStudent />}
+  </div>
+</>
+
+  )
 };
 
 export default ManageStudents;

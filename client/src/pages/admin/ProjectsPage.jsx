@@ -160,390 +160,271 @@ const handleDownloadFile = async (file) => {
     },
   ];
 
+
   return (
-    <>
-      <div className="space-y-6">
-        {/* Header   */}
-        <div className="card">
-          <div className="card-header flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div>
-              <h1 className="card-title">All Project</h1>
-              <p className="card-subtitle">
-                View and manage all student projects here.
-              </p>
+  <>
+    <div className="space-y-8">
+
+      {/* Header */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            Project Management
+          </h1>
+          <p className="text-sm text-slate-500">
+            Monitor, review and manage all student projects.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setIsReportOpen(true)}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition"
+        >
+          <FileDown className="w-5 h-5" />
+          Download Files
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {projectStats.map((item, index) => (
+          <div
+            key={index}
+            className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${item.bg}`}>
+                <item.Icon className={`w-6 h-6 ${item.iconColor}`} />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">{item.title}</p>
+                <p className="text-xl font-semibold text-slate-800">
+                  {item.value}
+                </p>
+              </div>
             </div>
-            <button
-              onClick={() => setIsReportOpen(true)}
-              className="btn-primary flex items-center space-x-2 mt-4 md:mt-0"
+          </div>
+        ))}
+      </div>
+
+      {/* Table Card */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+
+        {/* Title */}
+        <div className="px-6 py-4 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-slate-800">
+            Projects Overview
+          </h2>
+        </div>
+
+        {/* Search + Filter */}
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+
+            {/* Search */}
+            <div className="relative w-full md:w-96">
+              <input
+                type="text"
+                placeholder="Search by title or student name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              />
+              <svg
+                className="w-4 h-4 absolute left-3 top-3 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M21 21l-4.35-4.35M16 10a6 6 0 11-12 0 6 6 0 0112 0z" />
+              </svg>
+            </div>
+
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
             >
-              <FileDown className="w-5 h-5" />
-              <span>Download project</span>
-            </button>
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4">
-          {projectStats.map((item, index) => {
-            return (
-              <div key={index} className="card">
-                <div className="flex items-center">
-                  <div className={`p-3 rounded-lg ${item.bg}`}>
-                    <item.Icon className={`w-6 h-6 ${item.iconColor}`} />
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+              <tr>
+                <th className="px-6 py-3 text-left">Project</th>
+                <th className="px-6 py-3 text-left">Student</th>
+                <th className="px-6 py-3 text-left">Supervisor</th>
+                <th className="px-6 py-3 text-left">Deadline</th>
+                <th className="px-6 py-3 text-left">Status</th>
+                <th className="px-6 py-3 text-left">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-slate-200">
+              {filteredProjects.map((project) => (
+                <tr
+                  key={project._id}
+                  className="hover:bg-slate-50 transition"
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-semibold text-slate-800">
+                      {project.title}
+                    </div>
+                    <div className="text-xs text-slate-500 truncate max-w-xs">
+                      {project.description}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-700">
+                    {project?.student?.name}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    {project.supervisor?.name ? (
+                      <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                        {project.supervisor.name}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-400">
+                        Unassigned
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-600">
+                    {project.deadline
+                      ? new Date(project.deadline).toLocaleDateString()
+                      : "NA"}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        project.status
+                      )}`}
+                    >
+                      {project.status}
+                    </span>
+                  </td>
+
+                  <td className="px-6 py-4 flex gap-2">
+                    <button
+                      onClick={async () => {
+                        const res = await dispatch(
+                          getProject(project._id)
+                        );
+                        if (!getProject.fulfilled.match(res)) return;
+                        const detail =
+                          res.payload?.project || res.payload;
+                        setCurrentProject(detail);
+                        setShowViewModal(true);
+                      }}
+                      className="px-3 py-1 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                    >
+                      View
+                    </button>
+
+                    {project.status === "pending" && (
+                      <>
+                        <button
+                          onClick={() =>
+                            handleStatusChange(project._id, "approved")
+                          }
+                          className="px-3 py-1 text-xs rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleStatusChange(project._id, "rejected")
+                          }
+                          className="px-3 py-1 text-xs rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {filteredProjects.length === 0 && (
+            <div className="py-10 text-center text-slate-500">
+              No projects found.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* VIEW MODAL */}
+      {showViewModal && currentProject && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white w-11/12 md:w-2/3 lg:w-1/2 rounded-2xl shadow-xl p-8 relative">
+
+            <button
+              onClick={() => setShowViewModal(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <h2 className="text-xl font-semibold text-slate-800 mb-6">
+              Project Details
+            </h2>
+
+            <div className="space-y-5">
+              <div>
+                <p className="text-xs text-slate-500 mb-1">Title</p>
+                <div className="bg-slate-50 rounded-lg px-4 py-2">
+                  {currentProject.title}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-500 mb-1">Description</p>
+                <div className="bg-slate-50 rounded-lg px-4 py-2">
+                  {currentProject.description}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Student</p>
+                  <div className="bg-slate-50 rounded-lg px-4 py-2">
+                    {currentProject.student?.name || "-"}
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-slate-600">
-                      {item.title}
-                    </p>
-                    <p className="text-lg font-semibold text-slate-800">
-                      {item.value}
-                    </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Supervisor</p>
+                  <div className="bg-slate-50 rounded-lg px-4 py-2">
+                    {currentProject.supervisor?.name || "-"}
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Filters */}
-        <div className="card">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Search projects
-              </label>
-              <input
-                type="text"
-                className="input w-full"
-                placeholder="Search by project title or student name ..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Filter by Status
-              </label>
-              <select
-                className="input w-full"
-                placeholder="Search by project title or student name ..."
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Projects</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="completed">Completed</option>
-                <option value="rejected">Rejected</option>
-              </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Filter Supervisor
-              </label>
-              <select
-                className="input w-full"
-                placeholder="Search by project title or student name ..."
-                value={filterSupervisor}
-                onChange={(e) => setFilterSupervisor(e.target.value)}
-              >
-                <option value="all">All Supervisor</option>
-                {supervisors.map((supervisor) => {
-                  return (
-                    <option key={supervisor} value={supervisor}>
-                      {supervisor}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
           </div>
         </div>
-
-        {/* Projects table */}
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">Projects overview</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Project details
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Student
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Supervisor
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Deadline
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-slate-200">
-                {filteredProjects.map((project) => (
-                  <tr key={project._id} className="bg-slate-50">
-                    <td className="px-6 py-3">
-                      <div>
-                        <div className="text-sm font-medium text-slate-900">
-                          {project.title}
-                        </div>
-                        <div className="text-sm text-slate-500 max-w-xs truncate">
-                          {project.description}
-                        </div>
-                        <div className="text-xs text-slate -400">
-                          Due :{" "}
-                          {project.deadline && project.deadline.split("T")[0]}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <div className="text-sm font-medium text-slate-900">
-                        {project?.student?.name}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        Last update:{" "}
-                        {project?.updatedAt
-                          ? new Date(project.updatedAt).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              },
-                            )
-                          : "NA"}
-                      </div>
-
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <div className="text-sm text-slate-900 inline-flex items-center px-2.5 py-0.5 rounded-full font-medium">{project.supervisor?.name?(
-                        <span className="bg-green-100 text-green-800">{project.supervisor?.name}</span>
-                      ):("Unassigned")}</div>
-                    </td>
-                    <td className="px=6 py=3 whitespace-nowrap">
-{project.deadline ? new Date(project.deadline).toLocaleDateString(): "NA"}
-                    </td>
-                    <td className="px=6 py=3 whitespace-nowrap">
-{<span className={`inline-flex capitalized item-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>{project.status}</span>}
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button onClick={async()=>{
-                          const res=await dispatch(getProject(project._id));
-                          if(!getProject.fulfilled.match(res)) return ;
-                          const detail=res.payload?.project||res.payload;
-                          setCurrentProject(detail);
-                          setShowViewModal(true);
-                        }}
-                        className="btn-primary">View</button>
-                        {
-                          project.status==="pending"&&(
-                            <>
-                            <button className="btn-secondary" onClick={()=>handleStatusChange(project._id,"approved")}>Approve</button>
-                            <button className="btn-danger" onClick={()=>handleStatusChange(project._id,"rejected")}>Reject</button>
-                            </>
-                          )
-                        }
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {
-            filteredProjects.length === 0 && (
-              <div className="py-8 text-center text-slate-500">
-                No projects found matching the criteria.
-              </div>
-            )
-          }
-        </div>
-
-         {/* View Project Modal */}
-{showViewModal && currentProject && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
-      {/* Close */}
-      <button
-        onClick={() => setShowViewModal(false)}
-        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
-      >
-        <X className="w-6 h-6" />
-      </button>
-
-      <h2 className="text-xl font-semibold mb-6">Project Details</h2>
-
-      <div className="space-y-4">
-        {/* Title */}
-        <div>
-          <label className="block text-sm text-slate-500 mb-1">
-            Title
-          </label>
-          <input
-            disabled
-            value={currentProject.title}
-            className="input w-full bg-slate-50"
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm text-slate-500 mb-1">
-            Description
-          </label>
-          <input
-            disabled
-            value={currentProject.description}
-            className="input w-full bg-slate-50"
-          />
-        </div>
-
-        {/* Student & Supervisor */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-slate-500 mb-1">
-              Student
-            </label>
-            <input
-              disabled
-              value={currentProject.student?.name || "-"}
-              className="input w-full bg-slate-50"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-slate-500 mb-1">
-              Supervisor
-            </label>
-            <input
-              disabled
-              value={currentProject.supervisor?.name || "-"}
-              className="input w-full bg-slate-50"
-            />
-          </div>
-        </div>
-
-        {/* Status & Deadline */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-slate-500 mb-1">
-              Status
-            </label>
-            <input
-              disabled
-              value={currentProject.status}
-              className="input w-full bg-slate-50"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-slate-500 mb-1">
-              Deadline
-            </label>
-            <input
-              disabled
-              value={
-                currentProject.deadline
-                  ? new Date(
-                      currentProject.deadline
-                    ).toLocaleDateString()
-                  : "N/A"
-              }
-              className="input w-full bg-slate-50"
-            />
-          </div>
-        </div>
-
-        {/* Files */}
-        <div>
-          <label className="block text-sm text-slate-500 mb-1">
-            Files
-          </label>
-          <p className="text-sm text-slate-400">
-            {currentProject.files?.length
-              ? `${currentProject.files.length} file(s) uploaded`
-              : "No files uploaded"}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-{/* Download Files Modal */}
-{isReportOpen && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 relative max-h-[80vh] overflow-y-auto">
-      <button
-        onClick={() => setIsReportOpen(false)}
-        className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
-      >
-        <X className="w-6 h-6" />
-      </button>
-
-      <h2 className="text-xl font-semibold mb-4">
-        Download Project Files
-      </h2>
-
-      <input
-        type="text"
-        className="input w-full mb-4"
-        placeholder="Search files..."
-        value={reportSearch}
-        onChange={(e) => setReportSearch(e.target.value)}
-      />
-
-      {filteredFiles.length === 0 ? (
-        <p className="text-slate-500">No files found.</p>
-      ) : (
-        <ul className="space-y-3">
-          {filteredFiles.map((file) => (
-            <li
-              key={file.fileId}
-              className="flex justify-between items-center p-4 bg-slate-50 rounded-lg"
-            >
-              <div>
-                <p className="font-medium text-slate-900">
-                  {file.originalName}
-                </p>
-                <p className="text-sm text-slate-500">
-                  Project: {file.projectTitle} | Student:{" "}
-                  {file.studentName}
-                </p>
-              </div>
-              <button
-                onClick={() => handleDownloadFile(file)}
-                className="btn-primary"
-              >
-                Download
-              </button>
-            </li>
-          ))}
-        </ul>
       )}
     </div>
-  </div>
-)}
+  </>
+);
 
 
-
-
-      </div>
-    </>
-  );
 };
 
 export default ProjectsPage;

@@ -17,12 +17,15 @@ import UploadFiles from "./pages/student/UploadFiles";
 import SupervisorPage from "./pages/student/SupervisorPage";
 import FeedbackPage from "./pages/student/FeedbackPage";
 import NotificationsPage from "./pages/student/NotificationsPage";
+import StudentMarks from "./pages/student/getMarks";
+// import StudentChat from "./pages/student/StudentChat";
 
 // Teacher Pages
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import PendingRequests from "./pages/teacher/PendingRequests";
 import AssignedStudents from "./pages/teacher/AssignedStudents";
 import TeacherFiles from "./pages/teacher/TeacherFiles";
+// import TeacherChat from "./pages/teacher/TeacherChat";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -37,6 +40,8 @@ import { ToastContainer } from "react-toastify";
 import { Loader } from "lucide-react";
 import { getUser } from "./store/slices/authSlice";
 import { fetchDashboardStats } from "./store/slices/studentSlice";
+import AddOrUpdateMarks from "./pages/admin/AdminMarks";
+// import AllMarks from "./pages/admin/AllMarks";
 
 const App = () => {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
@@ -120,6 +125,8 @@ const App = () => {
             <Route path="assign-supervisor" element={<AssignSupervisor />} />
             <Route path="deadlines" element={<DeadlinesPage />} />
             <Route path="projects" element={<ProjectsPage />} />
+            <Route path="add-marks" element={<AddOrUpdateMarks />} />
+            {/* <Route path="all-marks" element={<AllMarks />} /> */}
           </Route>
 
           {/* Student routes */}
@@ -137,6 +144,7 @@ const App = () => {
             <Route path="supervisor" element={<SupervisorPage />} />
             <Route path="feedback" element={<FeedbackPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="my-marks" element={<StudentMarks />} />
           </Route>
 
           {/* Teachers routes */}

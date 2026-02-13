@@ -133,88 +133,107 @@ const TeacherFiles = () => {
   ];
 
   return (
-    <>
-      <div className="space-y-6">
-        {/* HEADER */}
-        <div className="card">
-          <div className="card-header">
-            <h1 className="card-title">Student Files</h1>
-            <p className="card-subtitle">
-              View and download files submitted by your students
+  <div className=" space-y-8 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    {/* HEADER */}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            Student Files
+          </h1>
+          <p className="text-slate-500 text-sm">
+            View and download files submitted by your students
+          </p>
+        </div>
+      </div>
+
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        {fileStats.map((item) => (
+          <div
+            key={item.label}
+            className="bg-gradient-to-r from-white to-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition"
+          >
+            <p className="text-xs text-slate-500 uppercase tracking-wide">
+              {item.label}
+            </p>
+            <p className="text-2xl font-bold text-slate-800 mt-1">
+              {item.value}
             </p>
           </div>
+        ))}
+      </div>
+    </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            {fileStats.map((item) => (
-              <div key={item.label} className={`${item.bg} p-4 rounded-lg`}>
-                <p className={`text-sm ${item.sub}`}>{item.label}</p>
-                <p className={`text-2xl font-bold ${item.text}`}>
-                  {item.value}
+    {/* SEARCH & FILTER */}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col md:flex-row gap-4">
+      <input
+        type="text"
+        placeholder="Search files..."
+        className="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
+      <select
+        className="px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+        value={filterType}
+        onChange={(e) => setFilterType(e.target.value)}
+      >
+        <option value="all">All Types</option>
+        <option value="report">Reports</option>
+        <option value="presentation">Presentations</option>
+        <option value="code">Code</option>
+        <option value="image">Images</option>
+        <option value="archive">Archives</option>
+      </select>
+    </div>
+
+    {/* FILE GRID */}
+    {filteredFiles.length === 0 ? (
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 py-16 text-center text-slate-400">
+        <File className="w-12 h-12 mx-auto mb-3 opacity-40" />
+        <p className="text-lg font-medium">No files found</p>
+        <p className="text-sm">Try adjusting your search or filter</p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredFiles.map((file) => (
+          <div
+            key={file._id}
+            className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex justify-between items-center"
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-slate-100 rounded-xl group-hover:bg-blue-50 transition">
+                {getFileIcon(file.type)}
+              </div>
+
+              <div>
+                <p className="font-semibold text-slate-800 truncate max-w-[160px]">
+                  {file.name}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  {file.student} • {file.uploadedAt}
                 </p>
               </div>
-            ))}
+            </div>
+
+            <button
+              onClick={() => handleDownloadFile(file)}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 text-sm font-medium"
+              aria-label={`Download file ${file.name}`}
+              title="Download file"
+            >
+              <ArrowDownToLine className="w-4 h-4" />
+              <span className="hidden sm:inline">Download</span>
+            </button>
           </div>
-        </div>
-
-        {/* SEARCH & FILTER */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="Search files..."
-            className="input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          <select
-            className="input"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="report">Reports</option>
-            <option value="presentation">Presentations</option>
-            <option value="code">Code</option>
-            <option value="image">Images</option>
-            <option value="archive">Archives</option>
-          </select>
-        </div>
-
-        {/* FILE GRID */}
-        {filteredFiles.length === 0 ? (
-          <div className="card text-center py-10 text-slate-500">
-            No files found
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {filteredFiles.map((file) => (
-              <div
-                key={file._id}
-                className="card flex justify-between items-center"
-              >
-                <div className="flex items-center gap-3">
-                  {getFileIcon(file.type)}
-                  <div>
-                    <p className="font-medium">{file.name}</p>
-                    <p className="text-sm text-slate-500">
-                      {file.student} • {file.uploadedAt}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleDownloadFile(file)}
-                  className="btn-outline"
-                >
-                  <ArrowDownToLine className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+        ))}
       </div>
-    </>
-  );
+    )}
+  </div>
+);
+
 };
 
 export default TeacherFiles;

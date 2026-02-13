@@ -109,245 +109,234 @@ console.log("STEP A - projects type:", typeof projects, projects);
     }
   };
 
+  const searchedProjects = useMemo(() => {
+  if (!query) return [];
+
+  return (projects || []).filter((p) =>
+    p.title?.toLowerCase().includes(query.toLowerCase())
+  );
+}, [query, projects]);
+
+
   return (
     <>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="card">
-          <div className="card-header flex flex-col md:flex-row justify-between md:items-center">
-            <div>
-              <h1 className="card-title">Manage deadlines</h1>
-              <p className="card-subtitle">
-                Create and monitor project deadline
-              </p>
-            </div>
-            <button
-              onClick={() => setShowModal(true)}
-              className="btn-primary mt-4 md:mt-0"
-            >
-              Create/Update Deadline
-            </button>
-          </div>
-        </div>
+  <div className="space-y-8">
 
-        {/* Filters */}
-        <div className="card">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Search deadlines
-              </label>
-              <input
-                type="input"
-                placeholder="Search by project or student..."
-                className="input-field w-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+    {/* Header */}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">
+          Manage Deadlines
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Create and monitor project submission deadlines
+        </p>
+      </div>
 
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">Projects deadlines</h2>
-          </div>
-          <div className="overflow-y-auto">
-            <table className="w-full">
-              <thead className="bg-slate-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Student
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Project title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Supervisor
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Deadline
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Updated
-                  </th>
-                </tr>
-              </thead>
+      <button
+        onClick={() => setShowModal(true)}
+        className="mt-4 md:mt-0 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-all shadow-sm"
+      >
+        + Create / Update Deadline
+      </button>
+    </div>
 
-              <tbody className="bg-white divide-y divide-slate-200">
-                {filteredProject.map((row) => {
-                  return (
-                    <tr key={row._id} className="hover:bg-slate-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <div className="text-sm font-medium text-slate-900">
-                            {row.studentName}
-                          </div>
-                          <div className="text-sm font-medium text-slate-500">
-                            {row.studentEmail}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">{row.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {row.supervisor !== "-" ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {row.supervisor}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            Not assigned
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">{row.deadline}</td>
-                      <td className="px-6 py-4">{row.updatedAt}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          {filteredProject.length === 0 && (
-            <div className="text-center py-8 text-slate-500">
-              No project found matching
-            </div>
-          )}
-        </div>
+    {/* Search */}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+      <label className="block text-sm font-semibold text-slate-700 mb-2">
+        Search Projects
+      </label>
+      <input
+        type="text"
+        placeholder="Search by project title or student name..."
+        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+    </div>
 
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-3xl mx-4 max-h-screen overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">
-                  Crrate/Update
-                </h3>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+    {/* Table */}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-200">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Project Deadlines
+        </h2>
+      </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="label">Project Title</label>
-                  <input
-                    type="text"
-                    className="input"
-                    placeholder="Start typing to search projects..."
-                    value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      setSelectedProject(null);
-                      setFormData({
-                        ...formData,
-                        projectTitle: e.target.value,
-                      });
-                    }}
-                  />
-                  {query && !selectedProject && (
-                    <div className="mt-2 border border-slate-200 rounded-md max-h-56 overflow-y-auto">
-                      {(projects || [])
-                        .filter((p) =>
-                          (p.title || "")
-                            .toLowerCase()
-                            .includes(query.toLowerCase()),
-                        )
-                        .slice(0, 8)
-                        .map((p) => (
-                          <button
-                            type="button"
-                            key={p._id}
-                            className="w-full text-left px-3 py-2 hover:bg-slate-50"
-                            onClick={() => {
-                              setSelectedProject(p);
-                              setQuery(p.title);
-                              setFormData({
-                                ...formData,
-                                projectTitle: p.title,
-                                deadlineDate: p.deadline
-                                  ? new Date(p.deadline)
-                                      .toISOString()
-                                      .slice(0, 10)
-                                  : "",
-                              });
-                            }}
-                            title={p.title}
-                          >
-                            <div className="text-sm font-medium text-slate-800 truncate">
-                              {p.title}
-                            </div>
-                            <div className="text-xs text-slate-500 truncate">
-                              {p.student?.name || "-"}
-                              {p.supervisor?.name || "-"}
-                            </div>
-                          </button>
-                        ))}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
+            <tr>
+              <th className="px-6 py-4 text-left">Student</th>
+              <th className="px-6 py-4 text-left">Project</th>
+              <th className="px-6 py-4 text-left">Supervisor</th>
+              <th className="px-6 py-4 text-left">Deadline</th>
+              <th className="px-6 py-4 text-left">Updated</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-slate-200">
+            {filteredProject.map((row) => (
+              <tr
+                key={row._id}
+                className="hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-6 py-4">
+                  <div>
+                    <div className="font-medium text-slate-900">
+                      {row.studentName}
                     </div>
-                  )}
-                </div>
-
-                <div>
-                  <label className="label">Deadline</label>
-                  <input
-                    type="date"
-                    className="input-field w-full"
-                    disabled={!selectedProject}
-                    value={formData.deadlineDate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, deadlineDate: e.target.value })
-                    }
-                  />
-                </div>
-
-                {selectedProject && (
-                  <div className="mt-4 border border-slate-200 rounded-lg p-4 bg-slate-50">
-                    <div className="mb-2">
-                      <div className="text-sm font-semibold text-slate-900">
-                        Project details
-                      </div>
-                      <div
-                        className="text-sm truncate text-slate-700"
-                        title={selectedProject.description || ""}
-                      >
-                        {(selectedProject.description || "").length > 160
-                          ? `${selectedProject.description.slice(0, 160)}...`
-                          : selectedProject.description}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div>
-                        <div className="text-xs text-slate-500">Status</div>
-                        <div className="text-sm font-medium text-slate-800">{selectedProject.status||"Unknown"}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-500">Supervisor</div>
-                        <div className="text-sm font-medium text-slate-800">{selectedProject.supervisor?.name||"Unknown"}</div>
-                      </div>
-                      <div className="md:col-span-2">
-                        <div className="text-xs text-slate-500">Student</div>
-                        <div className="text-sm font-medium text-slate-800">
-                          {selectedProject.student?.name||"-"}-
-                          {selectedProject.student?.email||"-"} </div>
-                      </div>
+                    <div className="text-slate-500 text-xs">
+                      {row.studentEmail}
                     </div>
                   </div>
-                )}
+                </td>
 
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button type="button" onClick={()=>setShowModal(false)} className="btn-secondary">Cancel</button>
-                  <button type="submit" className="btn-primary">Save deadline</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+                <td className="px-6 py-4 font-medium text-slate-800">
+                  {row.title}
+                </td>
+
+                <td className="px-6 py-4">
+                  {row.supervisor !== "-" ? (
+                    <span className="px-3 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 font-medium">
+                      {row.supervisor}
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 text-xs rounded-full bg-slate-200 text-slate-600">
+                      Not Assigned
+                    </span>
+                  )}
+                </td>
+
+                <td className="px-6 py-4 text-slate-700">
+                  {row.deadline}
+                </td>
+
+                <td className="px-6 py-4 text-slate-500">
+                  {row.updatedAt}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </>
-  );
+
+      {filteredProject.length === 0 && (
+        <div className="text-center py-12 text-slate-500">
+          No matching projects found.
+        </div>
+      )}
+    </div>
+
+    {/* Modal */}
+    {showModal && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl mx-4 p-8 max-h-screen overflow-y-auto">
+
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-slate-900">
+              Create / Update Deadline
+            </h3>
+            <button
+              onClick={() => setShowModal(false)}
+              className="text-slate-400 hover:text-slate-700 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            <div className="relative">
+  <label className="block text-sm font-semibold text-slate-700 mb-2">
+    Project Title
+  </label>
+
+  <input
+    type="text"
+    value={query}
+    onChange={(e) => {
+      setQuery(e.target.value);
+      setSelectedProject(null);
+    }}
+    placeholder="Search and select project..."
+    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+  />
+
+  {/* Dropdown Results */}
+  {query && !selectedProject && searchedProjects.length > 0 && (
+
+    <div className="absolute z-50 w-full bg-white border border-slate-200 rounded-xl mt-2 max-h-48 overflow-y-auto shadow-lg">
+      {searchedProjects.map((p) => (
+        <div
+          key={p._id}
+          onClick={() => {
+  setSelectedProject(p);
+  setQuery(p.title);
+}}
+
+          className="px-4 py-2 hover:bg-indigo-50 cursor-pointer text-sm"
+        >
+          <div className="font-medium text-slate-800">{p.title}</div>
+          <div className="text-xs text-slate-500">
+            {p.student?.name}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {query && searchedProjects.length === 0 && (
+    <div className="absolute z-50 w-full bg-white border border-slate-200 rounded-xl mt-2 p-3 text-sm text-slate-500 shadow-lg">
+      No projects found
+    </div>
+  )}
+</div>
+
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Deadline Date
+              </label>
+              <input
+                type="date"
+                disabled={!selectedProject}
+                value={formData.deadlineDate}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    deadlineDate: e.target.value,
+                  })
+                }
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition disabled:bg-slate-100"
+              />
+            </div>
+
+            <div className="flex justify-end gap-4 pt-4">
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition shadow-sm"
+              >
+                Save Deadline
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    )}
+  </div>
+</>
+
+  )
 };
 
 export default DeadlinesPage;

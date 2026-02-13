@@ -30,33 +30,28 @@ const PendingRequests = () => {
   };
 
   const handleAccept = async (request) => {
-  const id = request._id;
-  setLoading(id, "accepting", true);
-  try {
-    await dispatch(acceptRequest({ requestId: id })).unwrap();
-    console.log("Accepted successfully");
-  } catch (error) {
-    console.error("Accept failed:", error);
-    alert(error?.message || "Accept failed");
-  } finally {
-    setLoading(id, "accepting", false);
-  }
-};
+    const id = request._id;
+    setLoading(id, "accepting", true);
+    try {
+      await dispatch(acceptRequest({ requestId: id })).unwrap();
+    } catch (error) {
+      alert(error?.message || "Accept failed");
+    } finally {
+      setLoading(id, "accepting", false);
+    }
+  };
 
-const handleReject = async (request) => {
-  const id = request._id;
-  setLoading(id, "rejecting", true);
-  try {
-    await dispatch(rejectRequest({ requestId: id })).unwrap();
-    console.log("Rejected successfully");
-  } catch (error) {
-    console.error("Reject failed:", error);
-    alert(error?.message || "Reject failed");
-  } finally {
-    setLoading(id, "rejecting", false);
-  }
-};
-
+  const handleReject = async (request) => {
+    const id = request._id;
+    setLoading(id, "rejecting", true);
+    try {
+      await dispatch(rejectRequest({ requestId: id })).unwrap();
+    } catch (error) {
+      alert(error?.message || "Reject failed");
+    } finally {
+      setLoading(id, "rejecting", false);
+    }
+  };
 
   const filteredRequests = list.filter((request) => {
     const matchesSearch =
@@ -74,32 +69,47 @@ const handleReject = async (request) => {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="card">
-        <div className="card-header">
-          <h1 className="card-title">Pending supervision requests</h1>
-          <p className="card-subtitle">
-            Review and respond to student supervision requests
-          </p>
-        </div>
+    <div className="space-y-8">
 
-        {/* Search & Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <input
-            type="text"
-            placeholder="Search by student name or project title"
-            className="input-field flex-1"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      {/* Header */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
+      <h1 className="text-2xl font-bold text-slate-800">
+          Supervision Requests
+        </h1>
+         <p className="text-slate-500 text-sm mt-2">
+          Review and manage student supervision requests efficiently.
+        </p>
+      </div>
+
+      {/* Search & Filter */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+        <div className="flex flex-col md:flex-row gap-4">
+
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Search by student or project..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none transition"
+            />
+            <svg
+              className="w-4 h-4 absolute left-3 top-3 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M21 21l-4.35-4.35M16 10a6 6 0 11-12 0 6 6 0 0112 0z" />
+            </svg>
+          </div>
 
           <select
-            className="input-field sm:w-48"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            <option value="all">All requests</option>
+            <option value="all">All Requests</option>
             <option value="pending">Pending</option>
             <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
@@ -107,8 +117,8 @@ const handleReject = async (request) => {
         </div>
       </div>
 
-      {/* Requests List */}
-      <div className="space-y-4">
+      {/* Requests */}
+      <div className="space-y-5">
         {filteredRequests.map((req) => {
           const id = req._id;
           const project = req.latestProject || {};
@@ -119,84 +129,70 @@ const handleReject = async (request) => {
 
           const lm = loadingMap[id] || {};
 
-          let bgClass = "bg-white";
-          let statusMessage = "";
-
-          if (projectStatus === "approved" && supervisorAssigned) {
-            bgClass = "bg-blue-50 border-blue-300";
-            statusMessage = "Supervisor already assigned for this project.";
-          } else if (projectStatus === "rejected") {
-            bgClass = "bg-red-50 border-red-300";
-            statusMessage = "This project has been rejected.";
-          } else if (projectStatus === "pending") {
-            bgClass = "bg-yellow-50 border-yellow-300";
-            statusMessage = "This project is still pending approval.";
-          }
+          let badgeColor = "bg-yellow-100 text-yellow-700";
+          if (req.status === "accepted")
+            badgeColor = "bg-green-100 text-green-700";
+          if (req.status === "rejected")
+            badgeColor = "bg-red-100 text-red-700";
 
           return (
-            <div key={id} className={`card border ${bgClass} transition-all`}>
-              <div className="flex flex-col lg:flex-row justify-between">
+            <div
+              key={id}
+              className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 hover:shadow-md transition"
+            >
+              <div className="flex flex-col lg:flex-row justify-between gap-6">
+
                 {/* Info */}
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-slate-800">
-                      {req?.student?.name || "Unknown student"}
+                      {req?.student?.name || "Unknown Student"}
                     </h3>
                     <span
-                      className={`badge ${
-                        req.status === "pending"
-                          ? "badge-pending"
-                          : req.status === "accepted"
-                          ? "badge-approved"
-                          : "badge-rejected"
-                      }`}
+                      className={`px-3 py-1 text-xs rounded-full font-medium ${badgeColor}`}
                     >
                       {req.status?.charAt(0).toUpperCase() +
                         req.status?.slice(1)}
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-600 mb-1">
-                    {req?.student?.email || "No email"}
+                  <p className="text-sm text-slate-500 mb-2">
+                    {req?.student?.email || "No email provided"}
                   </p>
 
-                  <h4 className="font-medium mb-2 text-slate-700">
-                    {project?.title || "No title"}
-                  </h4>
+                  <div className="bg-slate-50 rounded-xl p-4 mt-3">
+                    <h4 className="font-medium text-slate-700 mb-1">
+                      {project?.title || "No Project Title"}
+                    </h4>
 
-                  <p className="text-xs text-slate-500">
-                    Submitted:{" "}
-                    {req?.createdAt
-                      ? new Date(req.createdAt).toLocaleString()
-                      : "-"}
-                  </p>
-
-                  {statusMessage && (
-                    <p className="text-sm mt-2 font-medium text-slate-700">
-                      {statusMessage}
+                    <p className="text-xs text-slate-500">
+                      Submitted on{" "}
+                      {req?.createdAt
+                        ? new Date(req.createdAt).toLocaleString()
+                        : "-"}
                     </p>
-                  )}
+                  </div>
                 </div>
 
                 {/* Actions */}
                 {req.status === "pending" && (
-                  <div className="flex items-center gap-3 mt-3">
+                  <div className="flex items-center gap-3">
                     <button
-                      className={`px-4 py-1.5 text-sm rounded-lg font-medium transition-colors duration-200 ${
-                        canAccept
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
                       disabled={lm.accepting || !canAccept}
                       onClick={() => handleAccept(req)}
+                      className={`px-4 py-2 text-sm rounded-xl font-medium transition ${
+                        canAccept
+                          ? "bg-green-600 hover:bg-green-700 text-white"
+                          : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                      }`}
                     >
                       {lm.accepting ? "Accepting..." : "Accept"}
                     </button>
 
                     <button
-                      className="px-4 py-1.5 text-sm rounded-lg font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white disabled:opacity-60 disabled:cursor-not-allowed"
                       disabled={lm.rejecting}
                       onClick={() => handleReject(req)}
+                      className="px-4 py-2 text-sm rounded-xl font-medium bg-red-600 hover:bg-red-700 text-white transition disabled:opacity-60"
                     >
                       {lm.rejecting ? "Rejecting..." : "Reject"}
                     </button>
@@ -208,15 +204,15 @@ const handleReject = async (request) => {
         })}
       </div>
 
-      {/* No Requests */}
+      {/* Empty State */}
       {filteredRequests.length === 0 && (
-        <div className="card text-center py-8">
-          <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-slate-800 mb-2">
-            No requests found
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 text-center">
+          <FileText className="w-14 h-14 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-slate-800 mb-2">
+            No Requests Found
           </h3>
-          <p className="text-slate-600">
-            There are no supervision requests matching your criteria.
+          <p className="text-slate-500 text-sm">
+            There are no supervision requests matching your filters.
           </p>
         </div>
       )}

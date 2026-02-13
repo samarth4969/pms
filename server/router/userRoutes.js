@@ -12,6 +12,8 @@ router.get("/me",isAuthenticated,getUser);
 router.get("/logout",isAuthenticated,logout);
 router.post("/password/forgot",forgotPassword);
 router.put("/password/reset",resetPassword);
+// router.post("/bulk-register", bulkRegisterStudents);
+
 
 export default router;
 

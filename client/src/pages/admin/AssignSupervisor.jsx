@@ -97,7 +97,7 @@ const AssignSupervisor = () => {
     }
     setPendingFor(projectId);
     const res = await dispatch(
-      assignSupervisorThunk({  supervisorId, projectId }),
+      assignSupervisorThunk({  supervisorId, projectId,studentId }),
     );
     setPendingFor(null);
 
@@ -161,38 +161,40 @@ const AssignSupervisor = () => {
     );
   };
 
-  return (
+ return (
   <>
-    {/* PAGE HEADER */}
-    <div className="mb-6">
-      <div className="card">
-        <h1 className="text-2xl font-bold text-slate-800">
+  <div className="space-y-8">
+
+    {/* HEADER */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">
           Assign Supervisors
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Manage supervisor assignment for student projects
+          Manage supervisor assignments for approved student projects
         </p>
       </div>
     </div>
 
-     {/* SUMMARY CARDS */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    {/* DASHBOARD CARDS */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {dashboardCards.map((card, index) => {
         const Icon = card.icon;
         return (
           <div
             key={index}
-            className="card hover:shadow-md transition-shadow"
+            className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 hover:shadow-md transition"
           >
-            <div className="flex items-center">
-              <div className={`p-3 ${card.bg} rounded-lg`}>
-                <Icon className={`w-6 h-6 ${card.color}`} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-slate-600">{card.title}</p>
-                <p className="text-xl font-bold text-slate-900">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-500">{card.title}</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">
                   {card.value}
                 </p>
+              </div>
+              <div className={`p-3 rounded-xl ${card.bg}`}>
+                <Icon className={`w-6 h-6 ${card.color}`} />
               </div>
             </div>
           </div>
@@ -201,27 +203,27 @@ const AssignSupervisor = () => {
     </div>
 
     {/* FILTERS */}
-    <div className="card mb-6 bg-slate-50 border mt-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Search students
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Search Students
           </label>
           <input
             type="text"
-            placeholder="Search by student name or project title..."
-            className="input-field w-full"
+            placeholder="Search by student name, email, or project..."
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Filter status
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Filter Status
           </label>
           <select
-            className="input-field w-full"
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
@@ -234,84 +236,79 @@ const AssignSupervisor = () => {
     </div>
 
     {/* TABLE */}
-    <div className="card">
-      <div className="card-header">
-        <h2 className="card-title">Student Assignments</h2>
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-slate-200">
+        <h2 className="text-lg font-semibold text-slate-800">
+          Student Assignments
+        </h2>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border border-slate-200 rounded-lg overflow-hidden">
-          <thead className="bg-slate-100">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-100 text-slate-600 uppercase text-xs tracking-wider">
             <tr>
               {headers.map((h) => (
-                <th
-                  key={h}
-                  className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider"
-                >
+                <th key={h} className="px-6 py-4 text-left font-semibold">
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
 
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="divide-y divide-slate-200">
             {filtered.map((row) => (
               <tr
                 key={row.projectId}
-                className="hover:bg-slate-50 transition"
+                className="hover:bg-slate-50 transition-colors"
               >
                 {/* STUDENT */}
                 <td className="px-6 py-4">
                   <div>
-                    <div className="text-sm font-medium text-slate-900">
+                    <div className="font-medium text-slate-900">
                       {row.studentName}
                     </div>
-                    <div className="text-sm text-slate-500">
+                    <div className="text-xs text-slate-500">
                       {row.studentEmail}
                     </div>
                   </div>
                 </td>
 
                 {/* PROJECT */}
-                <td className="px-6 py-4">{row.title}</td>
+                <td className="px-6 py-4 font-medium text-slate-800">
+                  {row.title}
+                </td>
 
                 {/* SUPERVISOR STATUS */}
                 <td className="px-6 py-4">
                   {row.supervisor ? (
-                    <Badge color="bg-green-100 text-green-800">
+                    <span className="px-3 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 font-medium">
                       {row.supervisor}
-                    </Badge>
+                    </span>
+                  ) : row.status === "rejected" ? (
+                    <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700 font-medium">
+                      Rejected
+                    </span>
                   ) : (
-                    <Badge
-                      color={
-                        row.status === "rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }
-                    >
-                      {row.status === "rejected"
-                        ? "Rejected"
-                        : "Not Assigned"}
-                    </Badge>
+                    <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-medium">
+                      Not Assigned
+                    </span>
                   )}
                 </td>
 
                 {/* DEADLINE */}
-                <td className="px-6 py-4">{row.deadline}</td>
+                <td className="px-6 py-4 text-slate-700">
+                  {row.deadline}
+                </td>
 
                 {/* UPDATED */}
-                <td className="px-6 py-4">{row.updatedAt}</td>
+                <td className="px-6 py-4 text-slate-500">
+                  {row.updatedAt}
+                </td>
 
                 {/* SELECT SUPERVISOR */}
                 <td className="px-6 py-4">
                   <select
-                    className={`input-field w-full ${
-                      row.supervisor ||
-                      row.status === "rejected" ||
-                      !row.isApproved
-                        ? "bg-slate-100 cursor-not-allowed"
-                        : ""
-                    }`}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition disabled:bg-slate-100"
                     value={selectedSupervisor[row.projectId] || ""}
                     disabled={
                       !!row.supervisor ||
@@ -322,9 +319,7 @@ const AssignSupervisor = () => {
                       handleSupervisorSelect(row.projectId, e.target.value)
                     }
                   >
-                    <option value="" disabled>
-                      Select supervisor
-                    </option>
+                    <option value="">Select supervisor</option>
                     {teachers
                       .filter((t) => t.capacityLeft > 0)
                       .map((t) => (
@@ -338,15 +333,6 @@ const AssignSupervisor = () => {
                 {/* ACTION */}
                 <td className="px-6 py-4">
                   <button
-                    className={`px-4 py-2 rounded-md text-sm font-medium ${
-                      row.supervisor
-                        ? "bg-green-100 text-green-700 cursor-not-allowed"
-                        : row.status === "rejected"
-                        ? "bg-red-100 text-red-700 cursor-not-allowed"
-                        : !row.isApproved
-                        ? "bg-yellow-100 text-yellow-700 cursor-not-allowed"
-                        : "btn-primary"
-                    }`}
                     onClick={() =>
                       handleAssign(row.studentId, row.status, row.projectId)
                     }
@@ -356,6 +342,15 @@ const AssignSupervisor = () => {
                       !row.isApproved ||
                       !selectedSupervisor[row.projectId]
                     }
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+                      row.supervisor
+                        ? "bg-emerald-100 text-emerald-700 cursor-not-allowed"
+                        : row.status === "rejected"
+                        ? "bg-red-100 text-red-700 cursor-not-allowed"
+                        : !row.isApproved
+                        ? "bg-yellow-100 text-yellow-700 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+                    }`}
                   >
                     {pendingFor === row.projectId
                       ? "Assigning..."
@@ -370,16 +365,16 @@ const AssignSupervisor = () => {
         </table>
 
         {filtered.length === 0 && (
-          <div className="text-center py-8 text-slate-500">
-            No students found matching your criteria
+          <div className="text-center py-12 text-slate-500">
+            No students match your filters.
           </div>
         )}
       </div>
     </div>
+  </div>
+</>
 
-   
-  </>
-);
+ )
 
 };
 

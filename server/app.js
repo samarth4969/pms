@@ -27,12 +27,11 @@ const app = express();
 /* ✅ CORS (FIXED) */
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: true,   // allow any localhost port
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 const uploadsDir=path.join(__dirname,"uploads");
 const tempDir=path.join(__dirname,"temp");

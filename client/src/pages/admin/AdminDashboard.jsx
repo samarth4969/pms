@@ -238,150 +238,191 @@ const AdminDashboard = () => {
     },
   ];
 
-  return (
+ return(
   <>
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-white mb-1">
-          Admin Dashboard
-        </h1>
-        <p className="text-blue-100 text-sm">
-          Manage the entire project management system and oversee all activities
-        </p>
-      </div>
+  <div className="space-y-8">
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        {dashboardStats.map((item, i) => (
-          <div key={i} className={`${item.bg} rounded-lg p-4`}>
-            <div className="flex items-center">
-              <div className={`${item.iconBg} rounded-lg p-2`}>
-                <item.Icon className={`w-6 h-6 ${item.iconColor}`} />
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-slate-600">
-                  {item.title}
-                </p>
-                <p className="text-sm font-medium text-slate-800">
-                  {item.value}
-                </p>
-              </div>
+    {/* HEADER */}
+    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 shadow-lg">
+      <h1 className="text-3xl font-bold text-white">
+        Admin Dashboard
+      </h1>
+      <p className="text-indigo-100 mt-2">
+        Manage projects, students, teachers and system activities
+      </p>
+    </div>
+
+    {/* STATS */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      {dashboardStats.map((item, i) => (
+        <div
+          key={i}
+          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-500">{item.title}</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">
+                {item.value}
+              </p>
+            </div>
+            <div className={`p-3 rounded-xl ${item.iconBg}`}>
+              <item.Icon className={`w-6 h-6 ${item.iconColor}`} />
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
+    </div>
 
-      {/* Charts & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 card">
-          <div className="card-header">
-            <h3 className="card-title">Project distribution by supervisor</h3>
-          </div>
-          <div className="p-4">
-            {supervisorsBucket.length === 0 ? (
-              <div className="h-64 flex items-center justify-center text-slate-500">
-                No data
-              </div>
-            ) : (
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={supervisorsBucket}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" interval={0} height={50} />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-                      {supervisorsBucket.map((_, i) => (
-                        <Cell
-                          key={i}
-                          fill={["#1E3A8A", "#2563EB", "#3B82F6", "#93C5FD"][i % 4]}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </div>
+    {/* CHART + NOTIFICATIONS */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Chart */}
+      <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-800">
+            Project Distribution by Supervisor
+          </h3>
         </div>
 
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Recent activity</h3>
-          </div>
-          <div className="space-y-3">
-            {latestNotifications.length === 0 ? (
-              <p className="text-slate-500 text-sm">No recent notifications</p>
-            ) : (
-              latestNotifications.map((n) => (
-                <div key={n._id} className="flex items-center text-sm">
-                  <div
-                    className={`mt-1 w-2 h-2 ${getBulletColor(
-                      n.type,
-                      n.priority
-                    )} rounded-full mr-3`}
-                  />
-                  <div>
-                    <p className="font-medium text-slate-800">{n.message}</p>
+        <div className="p-6">
+          {supervisorsBucket.length === 0 ? (
+            <div className="h-64 flex items-center justify-center text-slate-500">
+              No data available
+            </div>
+          ) : (
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={supervisorsBucket}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" interval={0} height={50} />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                    {supervisorsBucket.map((_, i) => (
+                      <Cell
+                        key={i}
+                        fill={["#4F46E5", "#6366F1", "#818CF8", "#A5B4FC"][i % 4]}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Notifications */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-800">
+            Recent Activity
+          </h3>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {latestNotifications.length === 0 ? (
+            <p className="text-slate-500 text-sm">
+              No recent notifications
+            </p>
+          ) : (
+            latestNotifications.map((n) => (
+              <div key={n._id} className="flex items-start gap-3">
+                <span
+                  className={`w-2.5 h-2.5 mt-2 rounded-full ${getBulletColor(
+                    n.type,
+                    n.priority
+                  )}`}
+                />
+                <div>
+                  <p className="text-sm font-medium text-slate-800">
+                    {n.message}
+                  </p>
+                  <div className="flex gap-2 mt-1">
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getBadgeClasses(
+                        "type",
+                        n.type
+                      )}`}
+                    >
+                      {n.type}
+                    </span>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getBadgeClasses(
+                        "priority",
+                        n.priority
+                      )}`}
+                    >
+                      {n.priority}
+                    </span>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
+    </div>
 
-      {/* Quick actions */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">Quick action</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {actionButtons.map((btn, i) => (
+    {/* QUICK ACTIONS */}
+    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+      <h3 className="text-lg font-semibold text-slate-800 mb-4">
+        Quick Actions
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {actionButtons.map((btn, i) => (
+          <button
+            key={i}
+            onClick={btn.onClick}
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-100 transition text-sm font-medium"
+          >
+            <btn.Icon className="w-5 h-5" />
+            {btn.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* REPORT MODAL */}
+    {isReportModalOpen && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-8 max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-slate-900">
+              All Project Files
+            </h3>
             <button
-              key={i}
-              onClick={btn.onClick}
-              className={`${btn.btnClass} flex items-center justify-center gap-2`}
+              onClick={() => setIsReportModalOpen(false)}
+              className="text-slate-400 hover:text-slate-700 transition"
             >
-              <btn.Icon className="w-5 h-5" />
-              {btn.label}
+              <X />
             </button>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Reports modal */}
-      {isReportModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
-            <div className="flex justify-between mb-4">
-              <h3 className="text-lg font-semibold">All files</h3>
-              <button onClick={() => setIsReportModalOpen(false)}>
-                <X />
-              </button>
-            </div>
+          <input
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none mb-6"
+            placeholder="Search files..."
+            value={reportSearch}
+            onChange={(e) => setReportSearch(e.target.value)}
+          />
 
-            <input
-              className="input w-full mb-4"
-              placeholder="Search files"
-              value={reportSearch}
-              onChange={(e) => setReportSearch(e.target.value)}
-            />
-
+          <div className="space-y-3">
             {filteredFiles.map((f, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center bg-slate-50 p-3 rounded mb-2"
+                className="flex justify-between items-center bg-slate-50 hover:bg-slate-100 transition p-4 rounded-xl"
               >
                 <div>
-                  <p className="font-medium">{f.originalName}</p>
-                  <p className="text-sm text-slate-500">
-                    {f.projectTitle} - {f.studentName}
+                  <p className="font-medium text-slate-800">
+                    {f.originalName}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {f.projectTitle} • {f.studentName}
                   </p>
                 </div>
+
                 <button
-                  className="btn-outline btn-small"
+                  className="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-200 transition"
                   onClick={() =>
                     handleDownload(f.projectId, f.fileId, f.originalName)
                   }
@@ -392,14 +433,15 @@ const AdminDashboard = () => {
             ))}
           </div>
         </div>
-      )}
+      </div>
+    )}
 
-      {/* Modals */}
-      {isCreateStudentModalOpen && <AddStudent />}
-      {isCreateTeacherModalOpen && <AddTeacher />}
-    </div>
-  </>
-);
+    {isCreateStudentModalOpen && <AddStudent />}
+    {isCreateTeacherModalOpen && <AddTeacher />}
+  </div>
+</>
+
+ )
 
 };
 

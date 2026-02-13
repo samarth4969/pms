@@ -57,7 +57,7 @@ export const resetPassword = createAsyncThunk(
 export const getUser = createAsyncThunk("auth/me", async (_, thunkAPI) => {
   try {
     const res = await axiosInstance.get("/auth/me");
-    return res.data.user; // ✅ FIXED
+    return res.data; // ✅ FIXED
   } catch (error) {
     return thunkAPI.rejectWithValue(null);
   }
@@ -97,18 +97,19 @@ const authSlice = createSlice({
       state.isLoggingIn=true;
     }).addCase(login.fulfilled, (state, action) => {
   state.isLoggingIn = false;
-  state.authUser = action.payload;
 
-  // ✅ ADD THIS
+  // TEMP user (not populated)
+  state.authUser = action.payload;
   localStorage.setItem("authUser", JSON.stringify(action.payload));
-}).addCase(login.rejected,(state)=>{
+})
+.addCase(login.rejected,(state)=>{
       state.isLoggingIn=false;
     }).addCase(getUser.pending,(state)=>{
       state.isCheckingAuth=true;
       // state.authUser=null;
     }).addCase(getUser.fulfilled,(state,action)=>{
       state.isCheckingAuth=false;
-      state.authUser=action.payload;
+      state.authUser=action.payload.data.user;
     }).addCase(getUser.rejected, (state) => {
   state.isCheckingAuth = false;
   state.authUser = null; // ✅ MUST

@@ -21,11 +21,23 @@ const Sidebar = ({ open, setOpen, userRole }) => {
           },
           { name: "Supervisor", path: "/student/supervisor", icon: "user" },
           { name: "Feedback", path: "/student/feedback", icon: "chat" },
+//           {
+//   name: "Chat",
+//   path: "/student/chat",
+//   icon: "chat",
+// },
+
           {
             name: "Notifications",
             path: "/student/notifications",
             icon: "bell",
           },
+          {
+            name: "My Marks",
+            path: "/student/my-marks",
+            icon: "check",
+          },
+          
         ];
       case "Teacher":
         return [
@@ -40,6 +52,11 @@ const Sidebar = ({ open, setOpen, userRole }) => {
             path: "/teacher/assigned-students",
             icon: "users",
           },
+//            {
+//   name: "Chat",
+//   path: "/teacher/chat",
+//   icon: "chat",
+// },
           { name: "Files", path: "/teacher/files", icon: "folder" },
         ];
       case "Admin":
@@ -57,7 +74,16 @@ const Sidebar = ({ open, setOpen, userRole }) => {
             icon: "link",
           },
           { name: "Deadlines", path: "/admin/deadlines", icon: "calendar" },
+         
+
           { name: "Projects", path: "/admin/projects", icon: "folder" },
+          {
+            name: "Add Marks",
+            path: "/admin/add-marks",
+            icon: "check",
+          },
+          
+          
         ];
       default:
         return [];

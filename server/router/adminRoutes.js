@@ -1,5 +1,6 @@
 import express from "express";
-import {createStudent, updateStudent, deleteStudent, getAllUsers, createTeacher, updateTeacher, deleteTeacher,getAllProjectsController, getDashboardStats, assignSupervisor, getProject, updateProjectStatus}from "../controllers/adminController.js"
+import { addOrUpdateMarks } from "../controllers/reviewController.js";
+import {createStudent, updateStudent, deleteStudent, getAllUsers, createTeacher, updateTeacher, deleteTeacher,getAllProjectsController, getDashboardStats, assignSupervisor, getProject, updateProjectStatus, searchStudents, getStudentsForReview}from "../controllers/adminController.js"
 
 import multer from "multer";
 import { downloadFile } from "../controllers/projectController.js";
@@ -11,6 +12,9 @@ const router=express.Router();
 router.post("/create-student",isAuthenticated,isAuthorized("Admin"),createStudent);
 router.put("/update-student/:id",isAuthenticated, isAuthorized("Admin"),updateStudent);
 router.delete("/delete-student/:id",isAuthenticated,isAuthorized("Admin"),deleteStudent);
+router.post("/add-or-update-marks/:studentId",isAuthenticated,isAuthorized("Admin"),addOrUpdateMarks);
+router.get("/search-students",isAuthenticated,isAuthorized("Admin"),searchStudents);
+
 
 router.post("/create-teacher",isAuthenticated,isAuthorized("Admin"),createTeacher);
 router.put("/update-teacher/:id",isAuthenticated, isAuthorized("Admin"),updateTeacher);
@@ -30,6 +34,12 @@ router.get(
 
 router.get("/project/:id",isAuthenticated,isAuthorized("Admin"),getProject);
 router.put("/project/:id",isAuthenticated,isAuthorized("Admin"),updateProjectStatus);
+router.get(
+  "/review-students",
+  isAuthenticated,
+  isAuthorized("Admin"),
+  getStudentsForReview
+);
 
 
 export default router;                                                                              

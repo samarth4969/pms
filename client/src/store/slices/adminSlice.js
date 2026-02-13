@@ -127,17 +127,30 @@ export const getDashboardStats = createAsyncThunk(
 );
 
 export const assignSupervisor = createAsyncThunk(
-  "assignSupervisor",
-  async (data, thunkAPI) => {
+  "admin/assignSupervisor",
+  async ({ supervisorId, projectId, studentId }, thunkAPI) => {
     try {
-      const res = await axiosInstance.post("/admin/assign-supervisor", data);
-      toast.success(res.data.message);
+      const res = await axiosInstance.post("/admin/assign-supervisor", {
+        supervisorId,
+        projectId,
+        studentId, // ✅ IMPORTANT
+      });
+
+      toast.success(res.data.message || "Supervisor assigned successfully");
+
+      // ✅ RETURN DATA so reducers & UI know it's done
+      return { supervisorId, projectId, studentId };
     } catch (error) {
-      toast.error(error.response.data.message || "Failed to assign supervisor");
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Failed to assign supervisor"
+      );
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to assign supervisor"
+      );
     }
-  },
+  }
 );
+
 
 export const approveProject = createAsyncThunk(
   "approveProject",

@@ -193,7 +193,7 @@ export const assignSupervisor = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // 1️⃣ Find project by ID
+  // 1️⃣ Find project and populate student
   const project = await Project.findById(projectId).populate("student");
 
   if (!project) {
@@ -205,46 +205,66 @@ export const assignSupervisor = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler("Supervisor already assigned", 400));
   }
 
-  // 3️⃣ Status validation
+  // 3️⃣ Project must be approved
   if (project.status !== "approved") {
     return next(
-      new ErrorHandler("Project must be approved before assigning supervisor", 400)
+      new ErrorHandler(
+        "Project must be approved before assigning supervisor",
+        400
+      )
     );
   }
 
-  // 4️⃣ Assign supervisor to project
+  // 4️⃣ Assign supervisor to PROJECT
   project.supervisor = supervisorId;
   await project.save();
 
-  // 5️⃣ Update supervisor assigned students (optional but good)
+  // 5️⃣ Assign supervisor to STUDENT (🔥 CRITICAL FIX)
   if (project.student) {
-    await User.findByIdAndUpdate(supervisorId, {
-      $addToSet: { assignedStudents: project.student._id },
-    });
+    // ✅ Update student document
+    await User.findByIdAndUpdate(
+      project.student._id,
+      { supervisor: supervisorId },
+      { new: true }
+    );
 
+    // ✅ Update teacher assigned students
+    await User.findByIdAndUpdate(
+      supervisorId,
+      { $addToSet: { assignedStudents: project.student._id } },
+      { new: true }
+    );
+
+    // 🔔 Notify student
     await notificationServices.notifyUser(
       project.student._id,
-      `You have been assigned supervisor`,
+      "You have been assigned a supervisor",
       "approval",
-      "/students/status",
+      "/student/dashboard",
       "low"
     );
   }
 
+  // 🔔 Notify teacher
   await notificationServices.notifyUser(
     supervisorId,
-    `You have been assigned a new project as supervisor`,
+    "You have been assigned a new student project",
     "general",
-    "/teachers/status",
+    "/teacher/dashboard",
     "low"
   );
 
   res.status(200).json({
     success: true,
     message: "Supervisor assigned successfully",
-    data: { project },
+    data: {
+      projectId: project._id,
+      supervisorId,
+      studentId: project.student?._id,
+    },
   });
 });
+
 
 
 
@@ -316,3 +336,65 @@ export const updateProjectStatus = asyncHandler(async (req, res, next) => {
     data: { project: updatedProject },
   });
 });
+
+
+export const searchStudents = async (req, res) => {
+  try {
+    const keyword = req.query.keyword
+      ? {
+          name: {
+            $regex: req.query.keyword,
+            $options: "i",
+          },
+          role: "Student",
+        }
+      : { role: "Student" };
+
+    const students = await User.find(keyword).select("name email");
+
+    res.status(200).json({
+      success: true,
+      students,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+import Review from "../models/reviewModel.js";
+
+export const getStudentsForReview = asyncHandler(async (req, res) => {
+  const students = await User.find({
+    role: "Student",
+    supervisor: { $ne: null },
+  })
+    .select("name email supervisor project")
+    .populate("supervisor", "name");
+
+  const formattedStudents = await Promise.all(
+    students.map(async (student) => {
+      const project = await Project.findOne({
+        student: student._id,
+      }).select("title status");
+
+      const review = await Review.findOne({
+        student: student._id,
+      });
+
+      return {
+        _id: student._id,
+        name: student.name,
+        email: student.email,
+        supervisor: student.supervisor,
+        project: project || null,
+        review: review || null,   // 🔥 ADD THIS
+      };
+    })
+  );
+
+  res.status(200).json({
+    success: true,
+    students: formattedStudents,
+  });
+});
+
