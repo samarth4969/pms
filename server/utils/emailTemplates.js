@@ -232,3 +232,5 @@ export function generateRequestRejectedTemplate(teacherName){
     </html>
     `;
 }
+
+

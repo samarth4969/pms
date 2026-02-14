@@ -420,6 +420,57 @@ const handleDownloadFile = async (file) => {
           </div>
         </div>
       )}
+
+      {/* DOWNLOAD FILES MODAL */}
+{isReportOpen && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white w-11/12 md:w-2/3 lg:w-1/2 rounded-2xl shadow-xl p-8 relative">
+
+      <button
+        onClick={() => setIsReportOpen(false)}
+        className="absolute top-5 right-5 text-slate-400 hover:text-slate-600"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      <h2 className="text-xl font-semibold text-slate-800 mb-6">
+        Download Project Files
+      </h2>
+
+      <div className="space-y-3 max-h-80 overflow-y-auto">
+        {files.length === 0 && (
+          <p className="text-slate-500 text-sm">
+            No files available.
+          </p>
+        )}
+
+        {files.map((file) => (
+          <div
+            key={file.fileId}
+            className="flex justify-between items-center bg-slate-50 p-3 rounded-lg"
+          >
+            <div>
+              <p className="text-sm font-medium text-slate-700">
+                {file.originalName}
+              </p>
+              <p className="text-xs text-slate-500">
+                {file.projectTitle} • {file.studentName}
+              </p>
+            </div>
+
+            <button
+              onClick={() => handleDownloadFile(file)}
+              className="px-3 py-1 text-xs rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Download
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   </>
 );
