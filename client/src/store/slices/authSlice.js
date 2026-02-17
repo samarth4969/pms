@@ -1,37 +1,95 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios";
 import { toast } from "react-toastify";
-const savedUser = localStorage.getItem("authUser");
 
+/* ================= SAFE LOCAL STORAGE PARSE ================= */
 
-export const login = createAsyncThunk("login", async (data, thunkAPI) => {
-  try {
-    const res = await axiosInstance.post("/auth/login", data, {
-      headers: { "Content-Type": "application/json" },
-    });
+let savedUser = null;
 
-    console.log("STEP 2 → LOGIN API FULL RESPONSE:", res.data);
+try {
+  const rawUser = localStorage.getItem("authUser");
+  savedUser =
+    rawUser && rawUser !== "undefined"
+      ? JSON.parse(rawUser)
+      : null;
+} catch (error) {
+  savedUser = null;
+  localStorage.removeItem("authUser");
+}
 
-    toast.success(res.data.message);
+/* ================= LOGIN ================= */
 
-    return res.data.user; // DO NOT change this yet
-  } catch (error) {
-    toast.error(error.response.data.message);
-    return thunkAPI.rejectWithValue(error.response.data.message);
+export const login = createAsyncThunk(
+  "auth/login",
+  async (data, thunkAPI) => {
+    try {
+      const res = await axiosInstance.post("/auth/login", data);
+
+      toast.success(res.data.message);
+
+      // 🔥 Backend sends: { success, message, data: { user } }
+      return res.data.data.user;
+
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Login failed";
+      toast.error(message);
+      return thunkAPI.rejectWithValue(message);
+    }
   }
-});
+);
 
-export const forgotPassword =createAsyncThunk("auth/password/forgot",async(email,thunkAPI)=>{
-  try {
-    const res=await axiosInstance.post("/auth/password/forgot",email);
-    toast.success(res.data.message);
-    return null;
-  } catch (error) {
-    toast.error(error.response.data.message);
-    return thunkAPI.rejectWithValue(error.response.data.message);
+/* ================= GET USER ================= */
 
+export const getUser = createAsyncThunk(
+  "auth/me",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get("/auth/me");
+      return res.data.data.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(null);
+    }
   }
-})
+);
+
+/* ================= LOGOUT ================= */
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, thunkAPI) => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      return null;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(null);
+    }
+  }
+);
+
+/* ================= FORGOT PASSWORD ================= */
+
+export const forgotPassword = createAsyncThunk(
+  "auth/password/forgot",
+  async (email, thunkAPI) => {
+    try {
+      const res = await axiosInstance.post(
+        "/auth/password/forgot",
+        { email }
+      );
+      toast.success(res.data.message);
+      return null;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Request failed";
+      toast.error(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+/* ================= RESET PASSWORD ================= */
+
 export const resetPassword = createAsyncThunk(
   "auth/password/reset",
   async ({ token, password, confirmPassword }, thunkAPI) => {
@@ -44,101 +102,106 @@ export const resetPassword = createAsyncThunk(
       toast.success(res.data.message);
       return null;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Reset failed");
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Reset failed"
-      );
+      const message =
+        error.response?.data?.message || "Reset failed";
+      toast.error(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-
-
-export const getUser = createAsyncThunk("auth/me", async (_, thunkAPI) => {
-  try {
-    const res = await axiosInstance.get("/auth/me");
-    return res.data; // ✅ FIXED
-  } catch (error) {
-    return thunkAPI.rejectWithValue(null);
-  }
-});
-
-
-export const logout = createAsyncThunk(
-  "auth/logout",
-  async (_, thunkAPI) => {
-    try {
-      await axiosInstance.post("/auth/logout"); // ✅ clears cookie
-      return null;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(null);
-    }
-  }
-);
-
-
-
+/* ================= SLICE ================= */
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-  authUser: savedUser ? JSON.parse(savedUser) : null, // ✅ IMPORTANT
-  isSigningUp: false,
-  isLoggingIn: false,
-  isUpdatingProfile: false,
-  isUpdatingPassword: false,
-  isRequestingForToken: false,
-  isCheckingAuth: false,
-},
+    authUser: savedUser,
+    isLoggingIn: false,
+    isCheckingAuth: false,
+    isUpdatingPassword: false,
+    isRequestingForToken: false,
+  },
 
+  reducers: {},
 
   extraReducers: (builder) => {
-    builder.addCase(login.pending,(state)=>{
-      state.isLoggingIn=true;
-    }).addCase(login.fulfilled, (state, action) => {
-  state.isLoggingIn = false;
+    builder
 
-  // TEMP user (not populated)
-  state.authUser = action.payload;
-  localStorage.setItem("authUser", JSON.stringify(action.payload));
-})
-.addCase(login.rejected,(state)=>{
-      state.isLoggingIn=false;
-    }).addCase(getUser.pending,(state)=>{
-      state.isCheckingAuth=true;
-      // state.authUser=null;
-    }).addCase(getUser.fulfilled,(state,action)=>{
-      state.isCheckingAuth=false;
-      state.authUser=action.payload.data.user;
-    }).addCase(getUser.rejected, (state) => {
-  state.isCheckingAuth = false;
-  state.authUser = null; // ✅ MUST
-  localStorage.removeItem("authUser");
-}).addCase(logout.fulfilled, (state) => {
-  state.authUser = null;
-  state.isCheckingAuth = false;
+      /* ===== LOGIN ===== */
 
-  // ✅ STEP 3: Clear saved user
-  localStorage.removeItem("authUser");
-})
-.addCase(logout.rejected,(state)=>{
-      state.authUser=state.authUser;
-    }).addCase(forgotPassword.pending,(state)=>{
-      state.isRequestingForToken=true;
-      
-    }).addCase(forgotPassword.fulfilled,(state,action)=>{
-      state.isRequestingForToken=false;
-    }).addCase(forgotPassword.rejected,(state)=>{
-      state.isRequestingForToken=false;
-    }).addCase(resetPassword.pending,(state)=>{
-      state.isUpdatingPassword=true;
-      
-    }).addCase(resetPassword.fulfilled,(state,action)=>{
-      state.isUpdatingPassword=false;
-      // state.authUser=action.payload;
-    }).addCase(resetPassword.rejected,(state)=>{
-      state.isUpdatingPassword=false;
-    })
+      .addCase(login.pending, (state) => {
+        state.isLoggingIn = true;
+      })
+
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoggingIn = false;
+        state.authUser = action.payload;
+
+        // Save safely
+        localStorage.setItem(
+          "authUser",
+          JSON.stringify(action.payload)
+        );
+      })
+
+      .addCase(login.rejected, (state) => {
+        state.isLoggingIn = false;
+      })
+
+      /* ===== GET USER ===== */
+
+      .addCase(getUser.pending, (state) => {
+        state.isCheckingAuth = true;
+      })
+
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.isCheckingAuth = false;
+        state.authUser = action.payload;
+
+        localStorage.setItem(
+          "authUser",
+          JSON.stringify(action.payload)
+        );
+      })
+
+      .addCase(getUser.rejected, (state) => {
+        state.isCheckingAuth = false;
+        state.authUser = null;
+        localStorage.removeItem("authUser");
+      })
+
+      /* ===== LOGOUT ===== */
+
+      .addCase(logout.fulfilled, (state) => {
+        state.authUser = null;
+        localStorage.removeItem("authUser");
+      })
+
+      /* ===== PASSWORD ===== */
+
+      .addCase(forgotPassword.pending, (state) => {
+        state.isRequestingForToken = true;
+      })
+
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.isRequestingForToken = false;
+      })
+
+      .addCase(forgotPassword.rejected, (state) => {
+        state.isRequestingForToken = false;
+      })
+
+      .addCase(resetPassword.pending, (state) => {
+        state.isUpdatingPassword = true;
+      })
+
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isUpdatingPassword = false;
+      })
+
+      .addCase(resetPassword.rejected, (state) => {
+        state.isUpdatingPassword = false;
+      });
   },
 });
 
