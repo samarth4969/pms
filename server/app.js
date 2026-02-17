@@ -25,10 +25,11 @@ const app = express();
 /* ✅ CORS */
 app.use(
   cors({
-    origin: true,
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
+
 
 /* ✅ Create Upload Folders */
 const uploadsDir = path.join(__dirname, "uploads");
