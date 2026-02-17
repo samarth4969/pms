@@ -23,12 +23,24 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 /* ✅ CORS */
+const allowedOrigins = [
+  "https://pms-hazel-delta.vercel.app",
+  "https://pms-f69f4u1f1-samarth-s-projects-ec77c53b.vercel.app"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
 
 
 /* ✅ Create Upload Folders */
