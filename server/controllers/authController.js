@@ -73,22 +73,19 @@ export const login = asyncHandler(async (req, res, next) => {
 
 // Logout User Controller
 export const logout = (req, res) => {
-
-  // Clear the JWT token cookie
-  // Important: Cookie options must match the ones used during login
   res.clearCookie("token", {
-    httpOnly: true,   // Prevents client-side JavaScript access (XSS protection)
-    sameSite: "lax",  // Helps protect against CSRF attacks
-    secure: false,    // Should be true in production (HTTPS)
-    path: "/",        // MUST match the path used while setting the cookie
+    httpOnly: true,
+    secure: true,       // ✅ MUST MATCH LOGIN
+    sameSite: "None",   // ✅ MUST MATCH LOGIN
+    path: "/",
   });
 
-  // Send success response
   res.status(200).json({
     success: true,
     message: "Logged out successfully",
   });
 };
+
 
 
 

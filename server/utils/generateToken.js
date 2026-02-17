@@ -1,13 +1,16 @@
-export const generateToken=(user,statusCode, message, res)=>{
-    const token=user.generateToken();
+export const generateToken = (user, statusCode, message, res) => {
+  const token = user.generateToken();
 
-    res.status(statusCode).cookie("token",token,{
-        expires:new Date(Date.now()+ process.env.COOKIE_EXPIRE*24*60*60*1000),
-        httpOnly:true,
-    }).json({
-        success:true,
-        user,
-        message,
-        token,
+  res.status(statusCode)
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: true,           // ✅ REQUIRED for HTTPS (Render/Vercel)
+      sameSite: "None",       // ✅ REQUIRED for cross-origin
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json({
+      success: true,
+      message,
+      data: { user },
     });
-}
+};
