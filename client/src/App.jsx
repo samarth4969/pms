@@ -18,6 +18,7 @@ import SupervisorPage from "./pages/student/SupervisorPage";
 import FeedbackPage from "./pages/student/FeedbackPage";
 import NotificationsPage from "./pages/student/NotificationsPage";
 import StudentMarks from "./pages/student/getMarks";
+import AIViva from "./pages/student/AIViva";
 // import StudentChat from "./pages/student/StudentChat";
 
 // Teacher Pages
@@ -145,6 +146,8 @@ const App = () => {
             <Route path="feedback" element={<FeedbackPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="my-marks" element={<StudentMarks />} />
+            <Route path="ai-viva" element={<AIViva />} />
+
           </Route>
 
           {/* Teachers routes */}

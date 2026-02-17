@@ -232,6 +232,3 @@ const UploadFiles = () => {
 
 
 export default UploadFiles;
-
-
-

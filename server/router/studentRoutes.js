@@ -25,4 +25,3 @@ router.get("/download/:projectId/:fileId",isAuthenticated,isAuthorized("Student"
 
 
 export default router;
-

@@ -1,4 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+
+console.log("ENV TEST:", process.env.GEMINI_API_KEY);
 import { connectDB } from "./config/db.js";
+
 import app from "./app.js";
 
 //DataBase Connection

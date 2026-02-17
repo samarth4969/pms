@@ -6,39 +6,42 @@ const Sidebar = ({ open, setOpen, userRole }) => {
 
   const getNavigationItems = () => {
     switch (userRole) {
+      
       case "Student":
-        return [
-          { name: "Home", path: "/student", icon: "home" },
-          {
-            name: "Submit Proposal",
-            path: "/student/submit-proposal",
-            icon: "document",
-          },
-          {
-            name: "Upload Files",
-            path: "/student/upload-files",
-            icon: "upload",
-          },
-          { name: "Supervisor", path: "/student/supervisor", icon: "user" },
-          { name: "Feedback", path: "/student/feedback", icon: "chat" },
-//           {
-//   name: "Chat",
-//   path: "/student/chat",
-//   icon: "chat",
-// },
+  return [
+    { name: "Home", path: "/student", icon: "home" },
+    {
+      name: "Submit Proposal",
+      path: "/student/submit-proposal",
+      icon: "document",
+    },
+    {
+      name: "Upload Files",
+      path: "/student/upload-files",
+      icon: "upload",
+    },
+    { name: "Supervisor", path: "/student/supervisor", icon: "user" },
+    { name: "Feedback", path: "/student/feedback", icon: "chat" },
 
-          {
-            name: "Notifications",
-            path: "/student/notifications",
-            icon: "bell",
-          },
-          {
-            name: "My Marks",
-            path: "/student/my-marks",
-            icon: "check",
-          },
-          
-        ];
+    // 👇 ADD THIS
+    {
+      name: "AI Viva",
+      path: "/student/ai-viva",
+      icon: "academic",
+    },
+
+    {
+      name: "Notifications",
+      path: "/student/notifications",
+      icon: "bell",
+    },
+    {
+      name: "My Marks",
+      path: "/student/my-marks",
+      icon: "check",
+    },
+  ];
+
       case "Teacher":
         return [
           { name: "Home", path: "/teacher", icon: "home" },
