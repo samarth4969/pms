@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { axiosInstance } from "../../lib/axios";
 
 console.log("Admin Marks Page Loaded");
 
@@ -15,10 +15,8 @@ const AdminAddMarks = () => {
 
     const fetchStudents = async () => {
       try {
-        const { data } = await axios.get(
-          "http://localhost:4000/api/v1/admin/review-students",
-          { withCredentials: true }
-        );
+        const { data } =await axiosInstance.get("/admin/review-students");
+
         
         setStudents(data.students || []);
 
@@ -69,14 +67,11 @@ setMarksData(initialMarks);
     }
 
     try {
-      await axios.post(
-       `http://localhost:4000/api/v1/admin/add-or-update-marks/${studentId}`,
-        {
-          review1: { obtained: Number(studentMarks.review1 || 0) },
-          review2: { obtained: Number(studentMarks.review2 || 0) },
-          review3: { obtained: Number(studentMarks.review3 || 0) },
-        },
-        { withCredentials: true }
+      await axiosInstance.post(`/admin/add-or-update-marks/${studentId}`, {
+        review1: { obtained: Number(studentMarks.review1 || 0) },
+        review2: { obtained: Number(studentMarks.review2 || 0) },
+        review3: { obtained: Number(studentMarks.review3 || 0) },
+      },
       );
 
       alert("Marks Saved Successfully");

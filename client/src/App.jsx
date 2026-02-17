@@ -26,6 +26,7 @@ import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import PendingRequests from "./pages/teacher/PendingRequests";
 import AssignedStudents from "./pages/teacher/AssignedStudents";
 import TeacherFiles from "./pages/teacher/TeacherFiles";
+import TeacherMarks from "./pages/teacher/teacherMarks";
 // import TeacherChat from "./pages/teacher/TeacherChat";
 
 // Admin Pages
@@ -163,6 +164,7 @@ const App = () => {
             <Route path="pending-requests" element={<PendingRequests />} />
             <Route path="assigned-students" element={<AssignedStudents />} />
             <Route path="files" element={<TeacherFiles />} />
+            <Route path="add-or-update-marks" element={<TeacherMarks />} />
           </Route>
 
           {/* Default redirect */}

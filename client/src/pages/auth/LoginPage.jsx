@@ -31,7 +31,7 @@ const LoginPage = () => {
     }
   }
 
-  const valiadateForm = () => {
+  const validateForm = () => {
     const newErrors = {};
 
     if (!formData.email) {
@@ -57,7 +57,7 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!valiadateForm()) return;
+    if (!validateForm()) return;
 
     dispatch(login({
       email: formData.email,
@@ -77,7 +77,7 @@ const LoginPage = () => {
     if (!authUser) return;
 
     if (authUser.role === "Admin") {
-      navigate("/admin");
+      navigate("/admin",{ replace: true });
     } else if (authUser.role === "Teacher") {
       navigate("/teacher");
     } else if (authUser.role === "Student") {
@@ -126,7 +126,7 @@ const LoginPage = () => {
             {/* Email address */}
             <div>
               <label className="label">Email address</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className={`input ${errors.email ? "input-error" : ""}`} placeholder="Enter your email" />
+              <input type="email" name="email" value={formData.email} onChange={handleChange} className={`input ${errors.password ? "input-error" : ""}`} placeholder="Enter your email" />
               {
                 errors.email && (
                   <p className="text-sm text-red-600 mt-1">{errors.email}</p>

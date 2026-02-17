@@ -9,6 +9,8 @@ import {
   getAssignedStudents,
   downloadFile,
   getFiles,
+  getAssignedStudentsForMarks,
+  teacherAddOrUpdateMarks,
 } from "../controllers/teacherController.js";
 import {
   isAuthenticated,
@@ -77,6 +79,19 @@ router.get(
   isAuthorized("Teacher"),
   getFiles
 );
+router.get(
+  "/assigned-students-for-marks",
+  isAuthenticated,
+  isAuthorized("Teacher"),
+  getAssignedStudentsForMarks
+);
+
+router.post(
+  "/add-or-update-marks/:studentId",
+  isAuthenticated,
+  isAuthorized("Teacher"),
+  teacherAddOrUpdateMarks
+)
 
 
 

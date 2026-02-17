@@ -61,6 +61,12 @@ const Sidebar = ({ open, setOpen, userRole }) => {
 //   icon: "chat",
 // },
           { name: "Files", path: "/teacher/files", icon: "folder" },
+            {
+              name: "Add Marks",  
+              path: "/teacher/add-or-update-marks",
+              icon: "check",
+            },
+
         ];
       case "Admin":
         return [

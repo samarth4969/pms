@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { axiosInstance } from "../../lib/axios";
 
 const StudentMarks = () => {
   const [marks, setMarks] = useState(null);
@@ -8,10 +8,8 @@ const StudentMarks = () => {
   useEffect(() => {
     const fetchMarks = async () => {
       try {
-        const { data } = await axios.get(
-          "http://localhost:4000/api/v1/student/my-marks",
-          { withCredentials: true }
-        );
+        const { data } = await axiosInstance.get("/student/my-marks");
+
 
         setMarks(data.review);
       } catch (error) {

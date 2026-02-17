@@ -14,6 +14,8 @@ import {
   generateRequestAcceptedTemplate,
   generateRequestRejectedTemplate,
 } from "../utils/emailTemplates.js";
+import Review from "../models/reviewModel.js";
+
 
 export const getTeacherDashboardStats = asyncHandler(async (req, res) => {
   const teacherId = req.user._id;
@@ -337,3 +339,92 @@ export const downloadFile = asyncHandler(async (req, res, next) => {
     file.originalName
   );
 });
+
+
+export const getAssignedStudentsForMarks = asyncHandler(async (req, res) => {
+  const teacherId = req.user._id;
+
+  const projects = await Project.find({
+    supervisor: teacherId,
+     status: { $in: ["approved", "completed"] },
+  })
+    .populate("student", "name email")
+    .populate("supervisor", "name")
+    .sort({ updatedAt: -1 });
+
+  const assignedStudents = await Promise.all(
+    projects.map(async (project) => {
+      const review = await Review.findOne({
+        student: project.student._id,
+      });
+
+      return {
+        ...project.student.toObject(),
+        project,
+        review, // 🔥 attach review manually
+      };
+    })
+  );
+
+  res.status(200).json({
+    success: true,
+    data: assignedStudents,
+  });
+});
+
+export const teacherAddOrUpdateMarks = async (req, res) => {
+  try {
+    const teacherId = req.user._id;
+    const { studentId } = req.params;
+    const { review1, review2, review3 } = req.body;
+
+    const student = await User.findById(studentId).populate("project");
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // ❌ Check supervisor match
+    if (student.supervisor.toString() !== teacherId.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    // ❌ Check project approval
+    if (student.project?.status !== "Approved") {
+      return res.status(400).json({
+        message: "Project not approved yet",
+      });
+    }
+
+    // ✅ Now update marks
+    let review = student.review;
+
+    if (!review) {
+      review = await Review.create({
+        student: studentId,
+        review1,
+        review2,
+        review3,
+      });
+
+      student.review = review._id;
+      await student.save();
+    } else {
+      review.review1 = review1;
+      review.review2 = review2;
+      review.review3 = review3;
+      await review.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Marks saved successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
