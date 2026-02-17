@@ -1,6 +1,6 @@
 import {asyncHandler} from "../middlewares/asyncHandler.js";
 import {ErrorHandler} from "../middlewares/error.js";
-import VivaSession from "../models/vivaSession.js";
+import VivaSession from "../models/VivaSession.js";
   import Project from "../models/project.js";
 import { generateVivaQuestions, evaluateAnswer } from "../services/aiService.js";
 
