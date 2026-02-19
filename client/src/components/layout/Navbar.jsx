@@ -104,6 +104,9 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
+            <div className="bg-orange-400" style={{ padding: "4px 8px", borderRadius: "4px", color: "white", fontWeight: "bold" }}>
+              India 
+            </div>
             {/* Profile dropdown */}
             <div className="relative">
               <button
