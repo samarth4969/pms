@@ -17,6 +17,10 @@ export const isAuthenticated=asyncHandler(async(req,res,next)=>{
     next();
 })
 
+// The isAuthenticated middleware checks whether a user is logged in by extracting the JWT token from cookies. 
+// It verifies the token using the secret key, fetches the user from the database, and attaches the user object to req.user.
+//  If the token is missing or invalid, it returns a 401 error.
+
 export const isAuthorized=(...roles)=>{
     return (req,res,next)=>{
         if(!roles.includes(req.user.role)){
@@ -25,3 +29,6 @@ export const isAuthorized=(...roles)=>{
         next();
     }
 }
+
+// The isAuthorized middleware handles role-based access control. It checks whether the logged-in user's role is allowed to access a specific route,
+// and if not, it returns a 403 Forbidden error.So authentication verifies identity, while authorization verifies permissions.

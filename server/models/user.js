@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import crypto from "crypto"; //used to generate secure random tokens (for reset password)
 
 const userSchema = new mongoose.Schema(
   {
@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Name is required"],
       trim: true,
-      MaxLength: [50, "Name cannot exceed 30 characters"],
+      MaxLength: [50, "Name cannot exceed 50 characters"],
     },
     email: {
       type: String,
@@ -17,14 +17,14 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, // email format validation
         "Please fill a valid email address",
       ],
     },
     password: {
       type: String,
       required: [true, "Password is required"],
-      select: false,
+      select: false, // password will NOT be returned in queries
       MinLength: [8, "Password must be alteast 8 character long"],
     },
     role: {
@@ -32,14 +32,26 @@ const userSchema = new mongoose.Schema(
       default: "Student",
       enum: ["Student", "Teacher", "Admin"],
     },
+
+    // Fields used for forgot password feature
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 
     department: {
-  type: String,
-  required: true,
-  enum: ["CS", "IT", "ENTC", "AIDS", "ANR", "Instru", "Electrical", "Mech", "Civil"]
-},
+      type: String,
+      required: true,
+      enum: [
+        "CS",
+        "IT",
+        "ENTC",
+        "AIDS",
+        "ANR",
+        "Instru",
+        "Electrical",
+        "Mech",
+        "Civil",
+      ],
+    },
 
     experties: {
       type: [String],
@@ -53,7 +65,7 @@ const userSchema = new mongoose.Schema(
     },
     assignedStudents: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId, // reference to User collection
         ref: "User",
       },
     ],
@@ -73,24 +85,31 @@ const userSchema = new mongoose.Schema(
   },
 );
 
+
+// This runs automatically before saving a user
 userSchema.pre("save", async function () {
+  // If password is not modified, don't hash again
   if (!this.isModified("password")) {
     return;
   }
 
+   // Hash password with salt rounds = 10
   this.password = await bcrypt.hash(this.password, 10);
 });
 
+// METHOD: Generate JWT Token
 userSchema.methods.generateToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
 
+// METHOD: Compare Entered Password with Hashed Password
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+// METHOD: Check if teacher has capacity to take more students
 userSchema.methods.hasCapacity = function () {
   if (this.role !== "Teacher") {
     return false;
@@ -98,6 +117,7 @@ userSchema.methods.hasCapacity = function () {
   return this.assignedStudents.length < this.maxStudents;
 };
 
+// METHOD: Generate Reset Password Token
 userSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
@@ -110,4 +130,6 @@ userSchema.methods.getResetPasswordToken = function () {
 
   return resetToken;
 };
+
+
 export const User = mongoose.model("User", userSchema);
